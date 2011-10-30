@@ -55,6 +55,9 @@ namespace example {
 		GLdouble* getUnchangedMVMatrix();
 
 		GLdouble getRotationX();
+		
+		bool isFPSMode();
+
 	};
 }
 

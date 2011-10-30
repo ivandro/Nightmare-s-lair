@@ -152,4 +152,16 @@ namespace example {
 
 	}
 
+	/*
+	** name: isFPSMode
+	** description: sees if the actual camera showing is the FPS
+	** return: answer to the question " we are at the fps camera right now? "
+	*/
+
+	bool MyFPSCamera::isFPSMode() {
+
+		return _isFPSMode;
+
+	}
+
 }

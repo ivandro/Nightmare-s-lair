@@ -39,6 +39,10 @@ namespace example {
         void draw();
 		void togglemovable();
 		void toggleDebugMode();
+
+		void fpsTransformationBegin();
+		void fpsTransformationEnd();
+
 	};
 }
 

@@ -143,36 +143,77 @@ namespace example {
 
 	int drawPasses = 100;
 
-	void MyBox::draw() {
+	/*
+	** name: fpsTransformationBegin
+	** description: transformation that the box suffer when the camera is the fpsCamera. PS: the function must be called with its counterpart
+	**		fpsTransformationEnd
+	*/
 
+	void MyBox::fpsTransformationBegin() {
+
+
+		// change the direction of the box to be equal to the direction of the camera
+		
+		MyFPSCamera *fps = (MyFPSCamera *) cg::Registry::instance()->get( "FPSCamera" );
+		cg::Vector3d *newFront = new cg::Vector3d( cos( fps->getRotationX() * degreeToRadianus ), 0.0, sin( fps->getRotationX() * degreeToRadianus ) );
+		cg::Vector3d *newRight = new cg::Vector3d( -sin( fps->getRotationX() * degreeToRadianus ), 0.0, cos( fps->getRotationX() * degreeToRadianus ) );
+
+		_physics.setFront ( *newFront );
+		_physics.setRight( *newRight );
 		// put the matrix mode to modelview
 		
 		glMatrixMode( GL_MODELVIEW );
 		// safe the actual modelview matrix
 		
 		glPushMatrix();
-		// get the camera unchanged modelview matrix
-		// put the unchanged matrix as the currently matrix
+
+			// get the camera unchanged modelview matrix
+			// put the unchanged matrix as the currently matrix
+		
+			glLoadMatrixd( fps->getUnchangedMVMatrix() );
+
+	}
+
+	/*
+	** name: fpsTransformationEnd
+	** description: terminating the fpsTransformation that the box suffer when in the fpsCamera
+	*/
+
+	void MyBox::fpsTransformationEnd() {
+
+		glPopMatrix();
+
+	}
+
+	void MyBox::draw() {
+
 		
 		MyFPSCamera *fps = (MyFPSCamera *) cg::Registry::instance()->get( "FPSCamera" );
-		glLoadMatrixd( fps->getUnchangedMVMatrix() );
+		if ( fps->isFPSMode() ) {
 
-		// change the direction of the box to be equal to the direction of the camera
+			fpsTransformationBegin();
 
-		cg::Vector3d *newFront = new cg::Vector3d( cos( fps->getRotationX() * degreeToRadianus ), 0.0, sin( fps->getRotationX() * degreeToRadianus ) );
-		cg::Vector3d *newRight = new cg::Vector3d( -sin( fps->getRotationX() * degreeToRadianus ), 0.0, cos( fps->getRotationX() * degreeToRadianus ) );
-
-		_physics.setFront ( *newFront );
-		_physics.setRight( *newRight );
+		}
 
 		glPushMatrix();
 			_physics.applyTransforms();
 			glCallList(_modelDL);
+			glDisable( GL_LIGHTING );
+			glPushMatrix();
+				//glLoadIdentity();
+				glTranslated( 0.0, 2.0, 0.0 );
+				glColor3d( 1.0, 0.0, 0.0 );
+				glutWireSphere( 0.5, 10, 10 );
+			glPopMatrix();
+			glEnable( GL_LIGHTING );
 		glPopMatrix();
 
-		// pop the unchanged matrix
 
-		glPopMatrix();
+		if ( fps->isFPSMode() ) {
+
+			fpsTransformationEnd();
+		
+		}
 
 	}
 
