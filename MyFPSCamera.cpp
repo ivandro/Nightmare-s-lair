@@ -35,27 +35,33 @@ namespace example {
 		_isFPSMode = true;
 		_isFirst = true;
 		_position.set(0,0,0);
-		glutSetCursor( GLUT_CURSOR_CROSSHAIR );
     }
+
+	/*
+	**	name: draw
+	**	description: draw the world in first person view 
+	**  detailed description: 
+	**		camera movement: move the rest of the world in the oposite direction of the camera to give the ilusion that the camera as moved
+	**		save camera modelview disposition: save the earlier modelview matrix, allowing objects that don't want to move with the rest of the 
+	**	  world, making the ilusion that they are following the camera 
+	*/
     void MyFPSCamera::draw() {
 		
-		glutWarpPointer( _winSize[ 0 ] / 2, _winSize[ 1 ] / 2);
-		if(_isFPSMode) {
+		if( _isFPSMode ) {
+
+			glutSetCursor( GLUT_CURSOR_CROSSHAIR );
+			glutWarpPointer( _winSize[ 0 ] / 2, _winSize[ 1 ] / 2);
+
 			_isFirst = false;
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			gluPerspective(80,_winSize[0]/(double)_winSize[1], 1.0, 100.0 );
+			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			GLdouble eyeX = _position[ 0 ];
-			GLdouble eyeY = _position[ 1 ] + 2.5; // 2.5 makes the camera a little " em cima " o the player object
+			GLdouble eyeY = _position[ 1 ] + 2.5; // 2.5 makes the camera a little above from the player object
 			GLdouble eyeZ = _position[ 2 ];
-			GLdouble centerX = _position[ 0 ] - 5; // the centerX in our game is equivalent to the z coordinate
-			GLdouble centerY = _position[ 1 ];
-			GLdouble centerZ = _position[ 2 ];
-			GLdouble upX = _up[ 0 ];
-			GLdouble upY = _up[ 1 ];
-			GLdouble upZ = _up[ 2 ];
 			
 			GLdouble initialYOrientation = -90.0;
 			GLdouble initialXOrientation = -29.0;
@@ -74,13 +80,20 @@ namespace example {
 			glPopMatrix();
 
 			// move the world such that look the camera is looking to the mouse position
-		glRotated( initialYOrientation + xRotation , 0.0, 1.0, 0.0 );
-			glRotated( initialXOrientation - yRotation , 0.0, 0.0, 1.0 );
+			glRotated( initialYOrientation , 0.0, 1.0, 0.0 );
+			glRotated( -yRotation, 0.0, 0.0, 1.0 );
+			glRotated( initialXOrientation , 0.0, 0.0, 1.0 );
+			glRotated( xRotation, 0.0, 1.0, 0.0 );
 			// move the camera to eyeX
 			glTranslated( -eyeX, -eyeY, -eyeZ );
-			//gluLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ );
 			
 		}
+		else {
+		
+			glutSetCursor( GLUT_CURSOR_INHERIT );
+
+		}
+
     }
 	
 	void MyFPSCamera::onReshape(int width, int height) {
@@ -102,6 +115,14 @@ namespace example {
 		
 	}
 
+	/*
+	** name: onMouseMotion
+	** description: make the camera look at where the mouse is pointing
+	** parameters:
+	**		x - x mouse position
+	**		y - y mouse position
+	*/
+
 	void MyFPSCamera::onMouseMotion( int x, int y ) {
 
 		// calculate the diference of the  x mouse position and the middle of the window
@@ -121,27 +142,62 @@ namespace example {
 			xRotation -= xDegreeOfRotation * 4;
 
 		}
+		if ( xRotation > 180 ) {
+
+			xRotation -= 360;
+
+		}
+		else if ( xRotation < -180 ) {
+
+			xRotation += 360;
+
+		}
+		else {
+
+			// não faz nada! x está entre os valores esperados
+
+		}
+
 		std::cout << " xRotation is " << xRotation << std::endl;
 
-		// calculate the diference of the  x mouse position and the middle of the window
+		// calculate the diference of the  y mouse position and the middle of the window
 	
 		GLdouble yMiddleWindowPos = ( GLdouble )_winSize[ 1 ] / 2.0;
 		GLdouble yDiff = y - yMiddleWindowPos;
 		
 		// multiply that diference by the y degree of rotation
 		GLdouble yDegreeOfRotation = 180.0 / ( GLdouble )_winSize[ 1 ];
+		GLdouble nextYRotation;
 		if ( yDiff > 0 ) {
 
-			yRotation += yDegreeOfRotation * 6;// * xDiff;
+			nextYRotation = yRotation + ( yDegreeOfRotation * 4 );
+			if ( nextYRotation > 90 ) {
+
+				nextYRotation = 90;
+
+			}
 		
 		}
 		else if ( yDiff < 0 ) {
 
-			yRotation -= yDegreeOfRotation * 6;
+			nextYRotation = yRotation - ( yDegreeOfRotation * 4 );
+			if ( nextYRotation < -90 ) {
+
+				nextYRotation = -90;
+
+			}
+
+		}else {
+
+			// the yDiff is 0 so the nextYRotation is equal to the yRotation
+			
+			nextYRotation = yRotation;
 
 		}
-		//yRotation = yDegreeOfRotation * yDiff;
 
+		
+		yRotation = nextYRotation;
+		std::cout << " yDiff " << yDiff << std::endl;
 		std::cout << " yRotation is " << yRotation << std::endl;
 
 	}
