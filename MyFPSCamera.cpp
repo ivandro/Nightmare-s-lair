@@ -63,16 +63,16 @@ namespace example {
 			GLdouble eyeY = _position[ 1 ] + 2.5; // 2.5 makes the camera a little above from the player object
 			GLdouble eyeZ = _position[ 2 ];
 			
-			GLdouble initialYOrientation = -90.0;
-			GLdouble initialXOrientation = -29.0;
+			GLdouble initialXOrientation = 90.0;
+			GLdouble initialYOrientation = 29.0;
 			
 			// unchanged matrix 
 			glPushMatrix();
 			
 			
-			glRotated( initialYOrientation, 0.0, 1.0, 0.0 );
-			glRotated( initialXOrientation , 0.0, 0.0, 1.0 );
-			glTranslated( -eyeX, -eyeY, -eyeZ );
+			fpsCameraPhysics.cameraRotation( initialXOrientation, 0.0, 1.0, 0.0 );
+			fpsCameraPhysics.cameraRotation( initialYOrientation, 0.0, 0.0, 1.0 );
+			fpsCameraPhysics.cameraTranslation( eyeX, eyeY, eyeZ );
 
 			// save unchanged modelView matrix
 			glGetDoublev( GL_MODELVIEW_MATRIX, unchangedModelViewMatrix );
@@ -80,12 +80,17 @@ namespace example {
 			glPopMatrix();
 
 			// move the world such that look the camera is looking to the mouse position
-			glRotated( initialYOrientation , 0.0, 1.0, 0.0 );
-			glRotated( -yRotation, 0.0, 0.0, 1.0 );
-			glRotated( initialXOrientation , 0.0, 0.0, 1.0 );
-			glRotated( xRotation, 0.0, 1.0, 0.0 );
-			// move the camera to eyeX
-			glTranslated( -eyeX, -eyeY, -eyeZ );
+			
+			fpsCameraPhysics.cameraRotation( initialXOrientation, 0.0, 1.0, 0.0 );
+			fpsCameraPhysics.cameraRotation( initialYOrientation, 0.0, 0.0, 1.0 );
+			
+			// pensava que o produto de rotações fosse comutativo, mas por alguma razão se mudar a ordem destes dois metodos
+			// o movimento da camera fica todo errado
+
+			fpsCameraPhysics.cameraRotation( fpsCameraPhysics.getCameraRotationY(), 0.0, 0.0, 1.0 );
+			fpsCameraPhysics.cameraRotation( -fpsCameraPhysics.getCameraRotationX(), 0.0, 1.0, 0.0 );
+
+			fpsCameraPhysics.cameraTranslation( eyeX, eyeY, eyeZ );
 			
 		}
 		else {
@@ -124,88 +129,15 @@ namespace example {
 	*/
 
 	void MyFPSCamera::onMouseMotion( int x, int y ) {
-
-		// calculate the diference of the  x mouse position and the middle of the window
-	
-		GLdouble xMiddleWindowPos = ( GLdouble )_winSize[ 0 ] / 2.0;
-		GLdouble xDiff = x - xMiddleWindowPos;
 		
-		// multiply that diference by the x degree of rotation
-	
-		GLdouble xDegreeOfRotation = 360.0 / ( GLdouble )_winSize[ 0 ];
-		if ( xDiff > 0 ) {
-
-			xRotation += xDegreeOfRotation * 4;// * xDiff;
-		}
-		else if ( xDiff < 0 ) {
-
-			xRotation -= xDegreeOfRotation * 4;
-
-		}
-		if ( xRotation > 180 ) {
-
-			xRotation -= 360;
-
-		}
-		else if ( xRotation < -180 ) {
-
-			xRotation += 360;
-
-		}
-		else {
-
-			// não faz nada! x está entre os valores esperados
-
-		}
-
-		std::cout << " xRotation is " << xRotation << std::endl;
-
-		// calculate the diference of the  y mouse position and the middle of the window
-	
-		GLdouble yMiddleWindowPos = ( GLdouble )_winSize[ 1 ] / 2.0;
-		GLdouble yDiff = y - yMiddleWindowPos;
-		
-		// multiply that diference by the y degree of rotation
-		GLdouble yDegreeOfRotation = 180.0 / ( GLdouble )_winSize[ 1 ];
-		GLdouble nextYRotation;
-		if ( yDiff > 0 ) {
-
-			nextYRotation = yRotation + ( yDegreeOfRotation * 4 );
-			if ( nextYRotation > 90 ) {
-
-				nextYRotation = 90;
-
-			}
-		
-		}
-		else if ( yDiff < 0 ) {
-
-			nextYRotation = yRotation - ( yDegreeOfRotation * 4 );
-			if ( nextYRotation < -90 ) {
-
-				nextYRotation = -90;
-
-			}
-
-		}else {
-
-			// the yDiff is 0 so the nextYRotation is equal to the yRotation
-			
-			nextYRotation = yRotation;
-
-		}
-
-		
-		yRotation = nextYRotation;
-		std::cout << " yDiff " << yDiff << std::endl;
-		std::cout << " yRotation is " << yRotation << std::endl;
+		fpsCameraPhysics.calculateCameraRotationVector( x, y, _winSize );
 
 	}
 
 	GLdouble* MyFPSCamera::getUnchangedMVMatrix() {
 
 		return &unchangedModelViewMatrix[ 0 ];
-
+		
 	}
 
 }

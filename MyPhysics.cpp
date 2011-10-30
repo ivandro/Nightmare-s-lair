@@ -42,6 +42,10 @@ namespace example {
 		_isRollRight = false;
 		_isStrafeLeft =false;
 		_isStrafeRight =false;
+
+		cameraRotationVector[ 0 ] = 0.0;
+		cameraRotationVector[ 1 ] = 0.0;
+
 	}
 	MyPhysics::~MyPhysics() {
 	}
@@ -165,4 +169,152 @@ namespace example {
 			glEnd();
 		glPopMatrix();
 	}
+
+
+	/*
+	** name: calculateCameraRotationVector
+	** description: calculate the  camera rotation vector correspondent with the mouse move  
+	** parameters:
+	**		x - x mouse position
+	**		y - y mouse position
+	**		_winSize - size of the game window
+	*/
+	void MyPhysics::calculateCameraRotationVector( int x, int y, cg::Vector2d _winSize ) {
+
+		// calculate the diference of the  x mouse position and the middle of the window
+	
+		GLdouble xMiddleWindowPos = ( GLdouble )_winSize[ 0 ] / 2.0;
+		GLdouble xDiff = x - xMiddleWindowPos;
+		
+		// multiply that diference by the x degree of rotation
+	
+		GLdouble xDegreeOfRotation = 360.0 / ( GLdouble )_winSize[ 0 ];
+		if ( xDiff > 0 ) {
+
+			cameraRotationVector[ 0 ] += xDegreeOfRotation * 4;// * xDiff;
+		
+		}
+		else if ( xDiff < 0 ) {
+
+			cameraRotationVector[ 0 ] -= xDegreeOfRotation * 4;
+
+		}
+		if ( cameraRotationVector[ 0 ] > 180 ) {
+
+			cameraRotationVector[ 0 ] -= 360;
+
+		}
+		else if ( cameraRotationVector[ 0 ] < -180 ) {
+
+			cameraRotationVector[ 0 ] += 360;
+
+		}
+		else {
+
+			// não faz nada! x está entre os valores esperados
+
+		}
+
+		//std::cout << " xRotation is " << cameraRotationVector[ 0 ] << std::endl;
+
+		// calculate the diference of the  y mouse position and the middle of the window
+	
+		GLdouble yMiddleWindowPos = ( GLdouble )_winSize[ 1 ] / 2.0;
+		GLdouble yDiff = y - yMiddleWindowPos;
+		
+		// multiply that diference by the y degree of rotation
+		GLdouble yDegreeOfRotation = 180.0 / ( GLdouble )_winSize[ 1 ];
+		GLdouble nextYRotation;
+		if ( yDiff > 0 ) {
+
+			nextYRotation = cameraRotationVector[ 1 ] + ( yDegreeOfRotation * 4 );
+			if ( nextYRotation > 90 ) {
+
+				nextYRotation = 90;
+
+			}
+		
+		}
+		else if ( yDiff < 0 ) {
+
+			nextYRotation = cameraRotationVector[ 1 ] - ( yDegreeOfRotation * 4 );
+			if ( nextYRotation < -90 ) {
+
+				nextYRotation = -90;
+
+			}
+
+		}else {
+
+			// the yDiff is 0 so the nextYRotation is equal to the yRotation
+			
+			nextYRotation = cameraRotationVector[ 1 ];
+
+		}
+
+		
+		cameraRotationVector[ 1 ] = nextYRotation;
+
+		// std::cout << " yDiff " << yDiff << std::endl;
+		// std::cout << " yRotation is " << cameraRotationVector[ 1 ] << std::endl;
+
+	}
+
+	/*
+	** name: getCameraRotationX
+	** description: acessor method for the x coordinate of the camera rotation vector
+	** return: x coordinate of the camera rotation vector
+	*/
+
+	GLdouble MyPhysics::getCameraRotationX() {
+
+		return cameraRotationVector[ 0 ];
+
+	}
+
+	/*
+	** name: getCameraRotationY
+	** description: acessor method for the y coordinate of the camera rotation vector
+	** return: y coordinate of the camera rotation vector
+	*/
+
+	GLdouble MyPhysics::getCameraRotationY() {
+
+		return cameraRotationVector[ 1 ];
+
+	}
+
+	/*
+	** name: cameraRotation
+	** description: rotate the camera
+	** parameters:
+	**		degree: angle( in degrees ) in wich the camera will be rotated
+	**		xAxis: degree in which the rotation is made in the xAxis
+	**		yAxis: degree in which the rotation is made in the yAxis
+	**		zAxis: degree in which the rotation is made in the zAxis
+	*/
+	
+	void MyPhysics::cameraRotation( GLdouble degree, GLdouble xAxis, GLdouble yAxis, GLdouble zAxis ) {
+
+		glRotated( -degree, xAxis, yAxis, zAxis );
+
+	}
+
+	/*
+	** name: cameraTranslation
+	** description: translate the camera
+	** parameters:
+	**		x: the x coordinate camera displacement
+	**		y: the y coordinate camera displacement
+	**		z: the z coordinate camera displacement
+	*/
+	
+	void MyPhysics::cameraTranslation( GLdouble x, GLdouble y, GLdouble z ) {
+
+		glTranslated( -x, -y, -z );
+
+	}
+
 }
+
+	

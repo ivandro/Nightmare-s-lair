@@ -35,6 +35,9 @@ namespace example {
 		cg::Quaterniond _q;
 		double _rotationMatrix[16];
 
+		
+		double cameraRotationVector[ 2 ];
+
 		bool _isGoAhead, _isGoBack;
 		bool _isYawLeft, _isYawRight;
 		bool _isPitchUp, _isPitchDown;
@@ -71,6 +74,14 @@ namespace example {
 
 		void setAxesScale(double scale);
 		void drawAxes();
+
+		void calculateCameraRotationVector( int x, int y, cg::Vector2d windowSize );
+		GLdouble getCameraRotationX();
+		GLdouble getCameraRotationY();
+		void cameraRotation( GLdouble degree, GLdouble xAxis, GLdouble yAxis, GLdouble zAxis );
+		void cameraTranslation( GLdouble x, GLdouble y, GLdouble z );
+
+
 	};
 
 }

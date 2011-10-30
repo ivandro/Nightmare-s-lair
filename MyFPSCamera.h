@@ -40,6 +40,8 @@ namespace example {
 		GLdouble yRotation;
 		GLdouble unchangedModelViewMatrix[ 16 ];
 
+		MyPhysics fpsCameraPhysics;
+
     public:
 		MyFPSCamera();
         virtual ~MyFPSCamera();
