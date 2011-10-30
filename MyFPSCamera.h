@@ -36,8 +36,6 @@ namespace example {
 		cg::Vector3d _up,_front,_right;
 		cg::Quaterniond _orientation, _q;
 		bool _isRoll, _isFPSMode, _isFirst;
-		GLdouble xRotation;
-		GLdouble yRotation;
 		GLdouble unchangedModelViewMatrix[ 16 ];
 
 		MyPhysics fpsCameraPhysics;
@@ -55,6 +53,8 @@ namespace example {
 		void onMouseMotion( int x, int y );
 
 		GLdouble* getUnchangedMVMatrix();
+
+		GLdouble getRotationX();
 	};
 }
 

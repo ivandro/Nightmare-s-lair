@@ -81,6 +81,10 @@ namespace example {
 		void cameraRotation( GLdouble degree, GLdouble xAxis, GLdouble yAxis, GLdouble zAxis );
 		void cameraTranslation( GLdouble x, GLdouble y, GLdouble z );
 
+		void setFront( cg::Vector3d front );
+		void setRight( cg::Vector3d right );
+		void setUp( cg::Vector3d up );
+
 
 	};
 

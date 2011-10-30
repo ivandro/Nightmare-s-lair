@@ -141,6 +141,8 @@ namespace example {
 
 	}
 
+	int drawPasses = 100;
+
 	void MyBox::draw() {
 
 		// put the matrix mode to modelview
@@ -154,6 +156,14 @@ namespace example {
 		
 		MyFPSCamera *fps = (MyFPSCamera *) cg::Registry::instance()->get( "FPSCamera" );
 		glLoadMatrixd( fps->getUnchangedMVMatrix() );
+
+		// change the direction of the box to be equal to the direction of the camera
+
+		cg::Vector3d *newFront = new cg::Vector3d( cos( fps->getRotationX() * degreeToRadianus ), 0.0, sin( fps->getRotationX() * degreeToRadianus ) );
+		cg::Vector3d *newRight = new cg::Vector3d( -sin( fps->getRotationX() * degreeToRadianus ), 0.0, cos( fps->getRotationX() * degreeToRadianus ) );
+
+		_physics.setFront ( *newFront );
+		_physics.setRight( *newRight );
 
 		glPushMatrix();
 			_physics.applyTransforms();

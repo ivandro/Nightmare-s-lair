@@ -6,6 +6,9 @@
 #include "MyFPSCamera.h"
 #include "MaterialBank.h"
 
+#define PI 3.198
+#define degreeToRadianus ( 2 * PI ) / 360
+
 namespace example {
 	class MyBox : public cg::Entity,
 		public cg::IUpdateListener,

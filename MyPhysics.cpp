@@ -315,6 +315,45 @@ namespace example {
 
 	}
 
+	/*
+	** name: setFront
+	** description: set the front vector
+	** parameters:
+	**		front - vector that points to the actual front direction
+	*/
+	
+	void MyPhysics::setFront( cg::Vector3d front ) {
+
+		_front = front;
+
+	}
+
+	/*
+	** name: setRight
+	** description: set the right vector
+	** parameters:
+	**		right - vector that points to the actual right direction
+	*/
+
+	void MyPhysics::setRight( cg::Vector3d right ) {
+
+		_right = right;
+
+	}
+
+	/*
+	** name: setUp
+	** description: set the up vector
+	** parameters:
+	**		up - vector that points to the actual up direction
+	*/
+
+	void MyPhysics::setUp( cg::Vector3d up ) {
+
+		_up = up;
+
+	}
+
 }
 
 	

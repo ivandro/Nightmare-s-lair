@@ -22,8 +22,10 @@ namespace example {
 
 	MyApp::MyApp() {
 		_windowInfo.caption = "Lab2";
-		_windowInfo.width = 800;
-		_windowInfo.height = 600;
+		_windowInfo.x = 900;
+		_windowInfo.y = 0;
+		_windowInfo.width = 400; //1366
+		_windowInfo.height = 400; // 768
 	}
 	MyApp::~MyApp() {
 	}

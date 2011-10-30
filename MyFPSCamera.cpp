@@ -20,7 +20,7 @@
 
 namespace example {
 
-    MyFPSCamera::MyFPSCamera() : Entity("FPSCamera"), xRotation( 0.0 ), yRotation( 0.0 ) {
+    MyFPSCamera::MyFPSCamera() : Entity("FPSCamera") {
 	}
     MyFPSCamera::~MyFPSCamera() {
 	}
@@ -50,7 +50,7 @@ namespace example {
 		if( _isFPSMode ) {
 
 			glutSetCursor( GLUT_CURSOR_CROSSHAIR );
-			glutWarpPointer( _winSize[ 0 ] / 2, _winSize[ 1 ] / 2);
+			glutWarpPointer( _winSize[ 0 ] / 2.0, _winSize[ 1 ] / 2.0);
 
 			_isFirst = false;
 			glMatrixMode(GL_PROJECTION);
@@ -138,6 +138,18 @@ namespace example {
 
 		return &unchangedModelViewMatrix[ 0 ];
 		
+	}
+
+	/*
+	** name: getRotationX
+	** description: fps camera rotation in the horizontal ( y axis but is the x that changes)
+	** return: the x rotation
+	*/
+
+	GLdouble MyFPSCamera::getRotationX() {
+
+		return fpsCameraPhysics.getCameraRotationX();
+
 	}
 
 }
