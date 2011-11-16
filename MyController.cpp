@@ -20,14 +20,15 @@
 
 namespace example {
 
-	MyController::MyController() : cg::Entity("Controller") {
+	MyController::MyController( std::string id ) : cg::Entity( id ) {
 	}
 	MyController::~MyController() {
 	}
 	void MyController::init() {
 	}
-	void MyController::onKeyPressed(unsigned char key) {
-        if (key == 27) {
+	void MyController::onKeyPressed( unsigned char key ) {
+
+        if ( key == KEY_ESCAPE ) {
 			cg::Manager::instance()->shutdownApp();
         }
 	}
@@ -40,7 +41,11 @@ namespace example {
 			cg::Manager::instance()->getApp()->dump();
         }
         if (key == GLUT_KEY_F2) {
-			MyTeapot *box = (MyTeapot*)cg::Registry::instance()->get("Teapot1");
+			Observer *observer= (Observer*)cg::Registry::instance()->get("Observer");
+			observer->toggleObjects();
+			observer->activeDebug();
+			
+		/*	MyTeapot *box = (MyTeapot*)cg::Registry::instance()->get("Teapot1");
 			if(box) {
 				box->toggleDebugMode();
 			}
@@ -49,7 +54,7 @@ namespace example {
 				light->toggleDebugMode();
 			}
 
-			MyBox *obj = (MyBox*)cg::Registry::instance()->get("Boxmagica");
+			MainCharacter *obj = (MainCharacter*)cg::Registry::instance()->get("Boxmagica");
 			if(obj) {
 				obj->toggleDebugMode();
 			}
@@ -57,20 +62,55 @@ namespace example {
 			if(cl) {
 				cl->toggleDebugMode();
 			}
-        }
-		 if (key == GLUT_KEY_F3) {
+
 			MyFPSCamera *fpscamera = (MyFPSCamera*)cg::Registry::instance()->get("FPSCamera");
 			MyCamera *camera = (MyCamera*)cg::Registry::instance()->get("Camera");
-			MyBox *obj = (MyBox*)cg::Registry::instance()->get("Boxmagica");
-			Cloud *cl = (Cloud*)cg::Registry::instance()->get("Nuvem");
-		    cl->togglemovable();
-			obj->togglemovable();
+			DebugCamera *debugcamera = (DebugCamera*)cg::Registry::instance()->get("DebugCamera");
+			cg::Vector3d position;
+			if(debugcamera){
+				if(fpscamera->isActive()) {
+					fpscamera->toggleFPSMode();	
+					position = fpscamera->getPosition();
+					debugcamera->_physics.setPosition(position[0],position[1],position[2]);
+					debugcamera->toggleDebugMode();
+				}
+				else if(camera->isActive()) {
+					camera->toggleTopMode(); 
+					position = camera->getPosition();
+					debugcamera->_physics.setPosition(position[0],position[1],position[2]);
+					debugcamera->toggleDebugMode();
+				}
+				else if(debugcamera->isActive()) {
+					debugcamera->toggleDebugMode(); 
+					fpscamera->toggleFPSMode();	//if debugactivo volta 'a CAMERA FPS
+				}
+			}*/
+		}
+		 if (key == GLUT_KEY_F3) {
+			  
+			Observer *observer= (Observer*)cg::Registry::instance()->get("Observer");
+					 
+			DebugCamera *debugcamera = (DebugCamera*)cg::Registry::instance()->get("DebugCamera");
+			if(!debugcamera->isActive()) {
+				MyFPSCamera *fpscamera = (MyFPSCamera*)cg::Registry::instance()->get("FPSCamera");
+				MyCamera *camera = (MyCamera*)cg::Registry::instance()->get("Camera");
+			
+				MainCharacter *obj = (MainCharacter*)cg::Registry::instance()->get("MainCharacter");
+				Cloud *cl = (Cloud*)cg::Registry::instance()->get("Nuvem");
+			
+				cl->togglemovable();
+				obj->togglemovable();
 		
-			if(camera){
-				camera->toggleTopMode();			
-			}
-			if(fpscamera){
-				fpscamera->toggleFPSMode();			
+				observer->toggleCameras();
+				/*	if(camera){
+					camera->toggleTopMode();			
+				}
+				if(fpscamera){
+					fpscamera->toggleFPSMode();			
+				}
+				*/
+
+			
 			}
 		 }
 	}

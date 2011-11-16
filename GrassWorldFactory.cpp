@@ -10,12 +10,5 @@ GrassWorldFactory::~GrassWorldFactory(void)
 {
 }
 
-void GrassWorldFactory::createSky(){
-
-}
-
-void GrassWorldFactory::createWall(){
-
-}
 
 }

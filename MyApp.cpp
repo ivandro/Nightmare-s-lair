@@ -21,47 +21,55 @@
 namespace example {
 
 	MyApp::MyApp() {
-		_windowInfo.caption = "Lab2";
-		_windowInfo.x = 900;
+		_windowInfo.caption = "Nightmare's Lair";				        
+		_windowInfo.x = 550;
 		_windowInfo.y = 0;
-		_windowInfo.width = 400; //1366
-		_windowInfo.height = 400; // 768
+		_windowInfo.width = 800; 
+		_windowInfo.height = 600; 
 	}
 	MyApp::~MyApp() {
 	}
 	void MyApp::createEntities() {
-		addEntity(new MyScene());
-		addEntity(new MyFPSCamera());
-		addEntity(new MyCamera());
-		addEntity(new MyLight("Light1"));
-		addEntity(new MyController());
-		addEntity(new MyWorld());
-	    addEntity(new Cloud("Nuvem"));
-		addEntity(new MyTeapot("Teapot1"));
-		//addEntity(new MyTexturedBox("Box1"));
-		addEntity(new MyBox("Boxmagica"));
-		addEntity(new Heart("coracao"));
-		addEntity(new Key("chave"));
-		addEntity(new CloudRemanant("ResidualCloud"));
-		//addEntity(new MyQuadric("Quadric1"));
+
+		addEntity( new MyScene( "Scene" ) );
+		addEntity( new MyFPSCamera( "FPSCamera" ) );
+		addEntity( new MyCamera( "Camera" ) );
+		addEntity( new DebugCamera( "DebugCamera" ) );	
+		addEntity( new MyLight( "Sun" ) );
+		addEntity( new MyController( "Controller" ) );
+		addEntity( new TextureBank( "TextureBank" ) );
+		addEntity( new MyWorld( "World" ) );
+		addEntity( new MainCharacter( "MainCharacter" ) );
+		addEntity( new Heart( "Heart" ) );
+		addEntity( new Key( "Key" ) );
+		addEntity( new Stone( "Stone" ) );
+		addEntity(new Rabbit("rabbit"));
+		addEntity(new Munition("munition"));
+		addEntity(new GroundMunition("groundmunition"));
+		addEntity( new Observer( "Observer" ) );
+		
 	}
 	void MyApp::createViews() {
-		cg::View* v = createView("view");
-		v->linkEntityAtEnd("Lighting");
-		v->linkEntityAtEnd("FPSCamera");
-		v->linkEntityAtEnd("Camera");
-		v->linkEntityAtEnd("Light1");
-		v->linkEntityAtEnd("Nuvem");
-		v->linkEntityAtEnd("World");
-		v->linkEntityAtEnd("coracao");
-		v->linkEntityAtEnd("chave");
-		v->linkEntityAtEnd("Teapot1");
-		v->linkEntityAtEnd("ResidualCloud");
-		//v->linkEntityAtEnd("Box1");
-		v->linkEntityAtEnd("Boxmagica");
-		//v->linkEntityAtEnd("Quadric1");
-		v->linkEntityAtEnd("Controller");
 	
+		cg::View* v = createView( "view" );
+		v->linkEntityAtEnd( "Scene" );
+		v->linkEntityAtEnd( "FPSCamera" ); 
+		v->linkEntityAtEnd( "Camera" ); 
+		v->linkEntityAtEnd( "DebugCamera" ); 
+		v->linkEntityAtEnd( "Sun" );
+		v->linkEntityAtEnd( "World" ); 
+		v->linkEntityAtEnd( "Heart" );
+		v->linkEntityAtEnd( "Key" );
+		v->linkEntityAtEnd( "Stone" );
+		v->linkEntityAtEnd("rabbit");
+	//	v->linkEntityAtEnd("munition");
+		v->linkEntityAtEnd("groundmunition");
+		v->linkEntityAtEnd( "MainCharacter" );
+		v->linkEntityAtEnd( "Controller" );
+		v->linkEntityAtEnd( "Observer" );	
+		example::World *world = new example::GrassWorld();
+		world->generateWorld("Images\\WorldMap\\Map.bmp",5.0f);
 	}
+
 
 }

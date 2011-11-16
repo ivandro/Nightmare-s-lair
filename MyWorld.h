@@ -38,7 +38,7 @@ namespace example {
 		void makeMaterial();
 
 	public:
-		MyWorld();
+		MyWorld( std::string id );
 		~MyWorld();
 		
 		void init();

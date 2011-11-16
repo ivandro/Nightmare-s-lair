@@ -2,10 +2,13 @@
 
 namespace example {
 
-	Cloud::Cloud(std::string id) : cg::Entity(id){}
+	Cloud::Cloud(int x, int y, float blocksize,std::string id) : cg::Entity(id){
+		_blocksize = blocksize;
+		_physics.setPosition(x*blocksize+(blocksize/2),blocksize*1.5,y*blocksize+(blocksize/2));
+	}
 	Cloud::~Cloud(void){}
 	 void Cloud::init(){
-		_physics.setPosition(0,2,0);
+		
 		_physics.setAngularVelocity(500); //considerar sizeOfBlock/2 em x de 10  
 		_physics.setLinearVelocity(50); 
 		_movable=false;
@@ -25,18 +28,18 @@ namespace example {
 
 
 	 		if(_movable && !_isDebug){
-				if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
+				if(cg::KeyBuffer::instance()->isKeyDown('w')) {
 					_physics.goAhead();
 					timeRemanant();
 				}
-				if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
+				if(cg::KeyBuffer::instance()->isKeyDown('s')) {
 					
 					_physics.goBack();	
 				}
-				if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
+				if(cg::KeyBuffer::instance()->isKeyDown('a')) {
 					_physics.yawLeft();
 				}
-				if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
+				if(cg::KeyBuffer::instance()->isKeyDown('d')) {
 					_physics.yawRight();
 				}
 				MyCamera * tps = (MyCamera *) cg::Registry::instance()->get("Camera");
@@ -51,10 +54,9 @@ namespace example {
 		 glPushMatrix();
 		 _physics.applyTransforms();
 		 glScaled(0.8*_shrinkVal,0.4,0.5); //Flattens the cloud Note when mooving make it shrink and expand by changing the z value according to
-		 glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialBank::getAmbientVec(MaterialBank::MATERIAL_PEARL));
-		 glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialBank::getDiffuseVec(MaterialBank::MATERIAL_PEARL));
-		 glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MaterialBank::getSpecularVec(MaterialBank::MATERIAL_PEARL));
-	     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, MaterialBank::getShininess(MaterialBank::MATERIAL_PEARL));
+		 
+		 Material * m = MaterialBank::getMaterial(MaterialBank::MATERIAL_PEARL);
+		 m->shade(GL_FRONT_AND_BACK);
 		
 		 glutSolidSphere(1,5,10);
 		 glTranslated(1,0,0);

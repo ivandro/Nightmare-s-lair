@@ -2,12 +2,12 @@
 
 namespace example{
 
-GrassWall::GrassWall(std::string id):Wall("GrassWall"){}
-GrassWall::~GrassWall(void){}
+	GrassWall::GrassWall(int x, int y, float blocksize, std::string id): Wall(x, y, blocksize, id){}
+	GrassWall::~GrassWall(void){}
 
-inline void GrassWall::makeTexture() {
-	GLuint texture = loadTexture("..\\..\\src\\grass.tga");
-	settextureDL(texture);
-}
+
+
+	void GrassWall::getTexture() {
+	}
 
 }

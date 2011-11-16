@@ -1,3 +1,4 @@
+
 // This file is an example for CGLib.
 //
 // CGLib is free software; you can redistribute it and/or modify
@@ -20,7 +21,7 @@
 
 namespace example {
 
-    MyCamera::MyCamera() : Entity("Camera") {
+    MyCamera::MyCamera( std::string id ) : Entity(id) {
 	}
     MyCamera::~MyCamera() {
 	}
@@ -33,16 +34,17 @@ namespace example {
 		_right.set(0,0,1);
 		_isRoll = false;
 		_isTopMode = false;
+		_position.set(25,5,25);
     }
     void MyCamera::draw() {
 		if(_isTopMode){
 			_position = _front * 15.0;
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(60,_winSize[0]/(double)_winSize[1],1.0,100.0);
+			gluPerspective(60,_winSize[0]/(double)_winSize[1],0.5,100.0);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			gluLookAt(_position[0],_position[1],_position[2],0,0,0,_up[0],_up[1],_up[2]);
+			gluLookAt(_position[0],_position[1],_position[2],25,0,25,_up[0],_up[1],_up[2]);
 		}
     }
 	void MyCamera::onReshape(int width, int height) {
@@ -77,11 +79,15 @@ namespace example {
 	}
 	void MyCamera::toggleTopMode() {
 		_isTopMode = !_isTopMode;
-
+	}
+	void MyCamera::setPosition(cg::Vector3d position){
+		_position.set(position);
 	}
 
-		void MyCamera::setPosition(cg::Vector3d position){
-		_position.set(position);
-
+	cg::Vector3d MyCamera::getPosition(){
+		return _position;
+	}
+	bool MyCamera::isActive(){
+		return _isTopMode;
 	}
 }

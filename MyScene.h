@@ -27,7 +27,7 @@ namespace example {
 		public cg::IDrawListener
 	{
 	public:
-		MyScene();
+		MyScene( std::string id );
 		~MyScene();
 		void init();
 		void draw();

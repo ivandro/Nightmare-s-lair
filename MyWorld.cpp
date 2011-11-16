@@ -38,7 +38,7 @@
 
 namespace example {
 
-	MyWorld::MyWorld() : cg::Entity("World") {
+	MyWorld::MyWorld( std::string id ) : cg::Entity( id ) {
 	}
 	MyWorld::~MyWorld() {
 	}

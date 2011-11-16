@@ -10,11 +10,11 @@ namespace example {
 				public cg::IDrawListener
 	{
 		private:
-			float _shrinkVal;
+			float _shrinkVal, _blocksize;
 			cg::Vector3d _pos;
 
 		public:
-			CloudRemanant(std::string id);
+			CloudRemanant(float blocksize,std::string id);
 			~CloudRemanant(void);
 			void init();
 			void update(unsigned long elapsed_millis);

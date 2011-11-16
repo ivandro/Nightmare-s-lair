@@ -39,7 +39,7 @@ namespace example {
 		bool _isTopMode;
 
     public:
-        MyCamera();
+        MyCamera( std::string id );
         virtual ~MyCamera();
         void init();
         void draw();
@@ -49,6 +49,8 @@ namespace example {
         void onMousePassiveMotion(int x, int y);
 		void toggleTopMode();
 		void setPosition(cg::Vector3d pos);
+		cg::Vector3d MyCamera::getPosition();
+		bool isActive();
 	};
 }
 

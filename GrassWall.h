@@ -2,16 +2,17 @@
 #define GRASSWALL_H
 
 #include "cg/cg.h"
+
 #include "Wall.h"
 
 namespace example{
 
-class GrassWall:Wall
+class GrassWall: public Wall
 {
 public:
-	GrassWall(std::string id);
+	GrassWall(int x, int y, float blocksize, std::string id);
 	~GrassWall(void);
-	void makeTexture();
+	void getTexture();
 };
 
 }

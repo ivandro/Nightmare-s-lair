@@ -22,6 +22,8 @@
 #include <string>
 #include "cg/cg.h"
 #include "MyPhysics.h"
+#include "MaterialBank.h"
+#include "MyFPSCamera.h"
 
 namespace example {
 
@@ -41,6 +43,8 @@ namespace example {
 		void init();
 		void update(unsigned long elapsed_millis);
 		void draw();
+		void drawSun();
+		void fpsTransformationBegin();
 
 		void toggleDebugMode();
 	};

@@ -60,12 +60,9 @@ namespace example {
 		assert(_modelDL != 0);
 		glNewList(_modelDL,GL_COMPILE);
 
-		//REMOVE 	 	 	 	 	 	 	 	 	
-  glMaterialfv(GL_FRONT, GL_AMBIENT, MaterialBank::getAmbientVec(MaterialBank::MATERIAL_COPPER));
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, MaterialBank::getDiffuseVec(MaterialBank::MATERIAL_COPPER));
-  glMaterialfv(GL_FRONT, GL_SPECULAR, MaterialBank::getSpecularVec(MaterialBank::MATERIAL_COPPER));
-  glMaterialf(GL_FRONT, GL_SHININESS, MaterialBank::getShininess(MaterialBank::MATERIAL_COPPER));
-		//REMOVE 
+	
+		Material *m = MaterialBank::getMaterial(MaterialBank::MATERIAL_COPPER);
+		 m->shade(GL_FRONT_AND_BACK);
 
 			// TOP
 			glPushMatrix();
@@ -105,7 +102,7 @@ namespace example {
 		glEndList();
 	}
 	void MyBox::init() {
-		//_physics.setPosition(3,1.01,-3);
+		_physics.setPosition(3,1.01,-3);
 		_physics.setAngularVelocity(1000); //considerar sizeOfBlock/2 em x de 10  
 		_physics.setLinearVelocity(100); 
 		//_lastposition = _physics.getPosition(); Remove

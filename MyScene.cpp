@@ -20,7 +20,7 @@
 
 namespace example {
 
-	MyScene::MyScene() : cg::Entity("Lighting") {
+	MyScene::MyScene( std::string id ) : cg::Entity( id ) {
 	}
 	MyScene::~MyScene() {
 	}

@@ -39,12 +39,8 @@ namespace example {
 
 		_materialDL = glGenLists(1);
 		assert(_materialDL != 0);
-		glNewList(_materialDL,GL_COMPILE);
-			 glMaterialfv(GL_FRONT,GL_EMISSION ,mat_emission);
-			 glMaterialfv(GL_FRONT, GL_AMBIENT, MaterialBank::getAmbientVec(MaterialBank::MATERIAL_GOLD));
-			 glMaterialfv(GL_FRONT, GL_DIFFUSE, MaterialBank::getDiffuseVec(MaterialBank::MATERIAL_GOLD));
-			 glMaterialfv(GL_FRONT, GL_SPECULAR, MaterialBank::getSpecularVec(MaterialBank::MATERIAL_GOLD));
-			 glMaterialf(GL_FRONT, GL_SHININESS, MaterialBank::getShininess(MaterialBank::MATERIAL_GOLD));
+		glNewList(_materialDL,GL_COMPILE);				 Material *m = MaterialBank::getMaterial(MaterialBank::MATERIAL_GOLD);
+				 m->shade(GL_FRONT_AND_BACK);
 		glEndList();
 	}
 	void MyTeapot::init() {
@@ -57,32 +53,24 @@ namespace example {
 		_debugMode = false;
 	}
 	void MyTeapot::update(unsigned long elapsed_millis) {
-		double elapsed_seconds = elapsed_millis / (double)1000;
-		if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
-			_physics.goAhead();
-		}
-		if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
-			_physics.goBack();
-		}
-		if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
-			_physics.yawLeft();
-		}
-		if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
-			_physics.yawRight();
-		}
-		if(cg::KeyBuffer::instance()->isKeyDown('z')) {
-			_physics.pitchUp();
-		}
-		if(cg::KeyBuffer::instance()->isKeyDown('q')) {
-			_physics.pitchDown();
-		}
-		if(cg::KeyBuffer::instance()->isKeyDown('x')) {
-			_physics.rollLeft();
-		}
-		if(cg::KeyBuffer::instance()->isKeyDown('c')) {
-			_physics.rollRight();
-		}
+		
+		if(!_debugMode){
+			double elapsed_seconds = elapsed_millis / (double)1000;
+			if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
+				_physics.goAhead();
+			}
+			if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
+				_physics.goBack();
+			}
+			if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
+				_physics.yawLeft();
+			}
+			if(cg::KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
+				_physics.yawRight();
+			}
+		
 		_physics.step(elapsed_seconds);
+		}
 	}
 	void MyTeapot::draw() {
 		if(_debugMode) {

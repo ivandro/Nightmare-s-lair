@@ -11,12 +11,4 @@ NightWorldFactory::~NightWorldFactory(void)
 {
 }
 
-void NightWorldFactory::createSky(){
-
-}
-
-void NightWorldFactory::createWall(){
-
-}
-
 }

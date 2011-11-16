@@ -1,161 +1,140 @@
 #include "Wall.h"
 
 namespace example{
-Wall::Wall(std::string id) : cg::Entity(id) 
-{
-}
 
-Wall::~Wall(void)
-{
-}
-
-GLuint loadTexture(const char *filename) {
-
-		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-		FIBITMAP *dib(0);
-		BYTE* bits(0);
-		GLuint gl_texID;
-		unsigned int width(0), height(0);
-
-		fif = FreeImage_GetFileType(filename, 0);
-		if(fif == FIF_UNKNOWN) {
-			fif = FreeImage_GetFIFFromFilename(filename);
-			return 0;
-		}
-
-		if(FreeImage_FIFSupportsReading(fif))
-			dib = FreeImage_Load(fif, filename);
-		if(!dib)
-			return false;
-
-		dib = FreeImage_ConvertTo24Bits(dib);
-		bits = FreeImage_GetBits(dib);
-		width = FreeImage_GetWidth(dib);
-		height = FreeImage_GetHeight(dib);
-		if((bits == 0) || (width == 0) || (height == 0))
-			return 0;
-
-		glGenTextures(1, &gl_texID);
-		glBindTexture(GL_TEXTURE_2D, gl_texID);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, bits);
-
-		FreeImage_Unload(dib);
-
-		return gl_texID;
-}
-
-inline
-	void Wall::dividedPlane(int n, 
-		double x0, double y0, double x1, double y1,
-		double nx, double ny, double nz,
-		double tx0, double ty0, double tx1, double ty1) 
+	Wall::Wall(int x, int y, float blocksize, std::string id) : cg::Entity(id) 
 	{
-		int countx = 0;
-		int county = 0;
-		double x = x0;
-		double y = y0;
-		double stepx = (x1-x0)/(double)n;
-		double stepy = (y1-y0)/(double)n;
-		double tx = tx0;
-		double ty = ty0;
-		double steptx = (tx1-tx0)/(double)n;
-		double stepty = (ty1-ty0)/(double)n;
+			_pos[0]=x;
+			_pos[1]=y;
+			_blocksize=blocksize;
+	}
 
-		glBegin(GL_QUADS);
-		glNormal3d(nx,ny,nz);
+	Wall::~Wall(void)
+	{
+	}
+	void texture();
+	static GLubyte checkImage[64][64][4];
+	GLuint wallTexture;
+	void Wall::init(){ 
+		TextureBank *textureBank = (TextureBank *) cg::Registry::instance()->get( "TextureBank" );
+		wallTexture = textureBank->loadTexture("Images\\Wall\\dirtyWall\\grass.tga");
 
-		while (countx != n) {
-			while (county != n) {
-				glTexCoord2d(tx, ty);
-				glVertex3d(x, 0, y);
-				glTexCoord2d(tx+steptx, ty);
-				glVertex3d(x+stepx, 0, y);
-				glTexCoord2d(tx+steptx, ty+stepty);
-				glVertex3d(x+stepx, 0, y+stepy);
-				glTexCoord2d(tx, ty+stepty);
-				glVertex3d(x, 0, y+stepy);
-				county++;
-				y += stepy;
-				ty += stepty;
+		for ( int i= 0; i < 64; i++) {
+
+			for ( int j = 0; j < 64; j++ ) {
+				int c = ( ( ( i & 0x8 ) == 0 ) ^ ( ( j & 0x8 ) == 0 ) ) * 255;
+				checkImage[i][j][0] = (GLubyte)c;
+				checkImage[i][j][1] = (GLubyte)c;
+				checkImage[i][j][2] = (GLubyte)c;
+				checkImage[i][j][3] = (GLubyte)255;
 			}
-			countx++;
-			x += stepx;
-			tx += steptx;
-			county = 0;
-			y = y0;
-			ty = ty0;
 		}
 
-		glEnd();
-	}
 
-	inline
-	void Wall::makeModel() {
-		_modelDL = glGenLists(1);
-		assert(_modelDL != 0);
-		glNewList(_modelDL,GL_COMPILE);
-			// TOP
-			glPushMatrix();
-				glTranslatef(0,1,0);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-			// BOTTOM
-			glPushMatrix();
-				glTranslatef(0,-1,0);
-				glRotatef(180, 1,0,0);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-			// LEFT
-			glPushMatrix();
-				glTranslatef(0,0,1);
-				glRotatef(90,1,0,0);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-			// RIGHT
-			glPushMatrix();
-				glTranslatef(0,0,-1);
-				glRotatef(-90,1,0,0);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-			// FRONT
-			glPushMatrix();
-				glTranslatef(1,0,0);
-				glRotatef(-90,0,0,1);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-			// BACK
-			glPushMatrix();
-				glTranslatef(-1,0,0);
-				glRotatef(90,0,0,1);
-				dividedPlane(10, -1,-1,1,1, 0,1,0, 0,0,1,1);
-			glPopMatrix();
-		glEndList();
 	}
+	
+	void texture() {
+	
+		char filename[] = "Images\\Wall\\dirtyWall\\grass.tga";
+		// adequerir informação sobre imagem
+		FREE_IMAGE_FORMAT fileFormat = FreeImage_GetFileType( filename, 0 );
+		FIBITMAP *fiWall = FreeImage_Load( fileFormat, filename, 0);
+		fiWall = FreeImage_ConvertTo32Bits( fiWall );
+		if ( fiWall != NULL ) {
+			int width = FreeImage_GetWidth( fiWall );
+			int height = FreeImage_GetHeight( fiWall );
 
-	void Wall::init() {
-		_physics.setPosition(3,1.01,3);
-		makeTexture();
-		makeModel();
+			BYTE *bits = new BYTE[ width * height * 4 ];
+
+			BYTE *pixels = (BYTE *)FreeImage_GetBits( fiWall );
+
+			for(int pix=0; pix < width * height; pix++) {
+
+				bits[ pix*4 + 0 ] = pixels[ pix*4 + 2 ];
+				bits[ pix * 4 + 1 ] = pixels[ pix * 4 + 1 ];
+				bits[ pix * 4 + 2 ] = pixels[ pix * 4 + 0 ];
+				bits[ pix* 4 + 3 ] = pixels[ pix * 4  + 3 ];
+
+			}
+
+			glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+			glGenTextures( 1, &wallTexture );
+				// definir objecto da textura
+				glBindTexture( GL_TEXTURE_2D, wallTexture );
+				// definir os parametros sobre filtros ( minimation and magnization )
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+				// definir os parametros sobre cobertura ( clamp_t e clamp_s )
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bits ); 
+		}		
+
 	}
-
+		
 	void Wall::draw() {
+
+		glEnable( GL_TEXTURE_2D );
+		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+		glBindTexture( GL_TEXTURE_2D, wallTexture );
+		//getTexture();
+
 		glPushMatrix();
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, _textureDL);
-			glCallList(_modelDL);
-			glDisable(GL_TEXTURE_2D);
+		glTranslatef((GLfloat)_pos[0]*_blocksize,0,(GLfloat)_pos[1]*_blocksize);
+		glScalef(_blocksize,_blocksize,_blocksize);
+		glColor3f(1.0f,0.0f,0.0f);
+		
+		glPushMatrix();
+			glBegin(GL_POLYGON);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(0.0f,1.0f,0.0f);
+				glTexCoord2f( 1.0f, 0.0f );glVertex3f(1.0f,1.0f,0.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(1.0f,1.0f,1.0f);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(0.0f,1.0f,1.0f);
+			glEnd();
 		glPopMatrix();
+
+		glPushMatrix();
+			glBegin(GL_POLYGON);
+				glTexCoord2f( 1.0f, 0.0f ); glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(0.0f,1.0f,0.0f);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(0.0f,1.0f,1.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,0.0f,1.0f);
+			glEnd();
+		glPopMatrix();
+
+
+		glPushMatrix();
+			glBegin(GL_POLYGON);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(1.0f,1.0f,1.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,1.0f,0.0f);
+				glTexCoord2f( 1.0f, 0.0f );glVertex3f(1.0f,0.0f,0.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(1.0f,0.0f,1.0f);
+			glEnd();
+		glPopMatrix();
+
+		glPushMatrix();
+			glBegin(GL_POLYGON);
+				glTexCoord2f( 1.0f, 0.0f );glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,0.0f,0.0f);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(1.0f,1.0f,0.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,1.0f,0.0f);
+			glEnd();
+		glPopMatrix();
+
+		glPushMatrix();
+			glBegin(GL_POLYGON);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(1.0f,1.0f,1.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,0.0f,1.0f);
+				glTexCoord2f( 1.0f, 0.0f );glVertex3f(0.0f,0.0f,1.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,1.0f,1.0f);
+				
+
+			glEnd();
+		glPopMatrix();
+		glPopMatrix();
+		
+		glDisable( GL_TEXTURE_2D );
 	}
 
-
-
-void Wall::settextureDL(GLuint textureDL){
-		_textureDL = textureDL;
-}
 
 }

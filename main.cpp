@@ -21,5 +21,6 @@
 
 int main(int argc, char** argv) {
 	cg::Manager::instance()->runApp(new example::MyApp(),60,argc,argv);
+	while(true);
 	return 0;
 }

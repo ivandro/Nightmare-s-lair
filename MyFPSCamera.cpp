@@ -20,7 +20,8 @@
 
 namespace example {
 
-    MyFPSCamera::MyFPSCamera() : Entity("FPSCamera") {
+    MyFPSCamera::MyFPSCamera( std::string id ) : Entity( id ) {
+				glutSetCursor( GLUT_CURSOR_CROSSHAIR );
 	}
     MyFPSCamera::~MyFPSCamera() {
 	}
@@ -35,6 +36,10 @@ namespace example {
 		_isFPSMode = true;
 		_isFirst = true;
 		_position.set(0,0,0);
+/*
+		_position.set(3,1.01,-3);//posicao inicial do obj
+
+*/
     }
 
 	/*
@@ -49,13 +54,10 @@ namespace example {
 		
 		if( _isFPSMode ) {
 
-			glutSetCursor( GLUT_CURSOR_CROSSHAIR );
-			glutWarpPointer( _winSize[ 0 ] / 2.0, _winSize[ 1 ] / 2.0);
-
 			_isFirst = false;
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(80,_winSize[0]/(double)_winSize[1], 1.0, 100.0 );
+			gluPerspective(80,_winSize[0]/(double)_winSize[1], 0.25, 100.0 );
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -95,7 +97,7 @@ namespace example {
 		}
 		else {
 		
-			glutSetCursor( GLUT_CURSOR_INHERIT );
+			// do nothing!
 
 		}
 
@@ -107,8 +109,24 @@ namespace example {
 
 	void MyFPSCamera::toggleFPSMode() {
 		_isFPSMode = !_isFPSMode;
+		
+		if ( _isFPSMode ) {
+
+			
+			glutSetCursor( GLUT_CURSOR_CROSSHAIR );
+
+		}
+		else {
+
+			glutSetCursor( GLUT_CURSOR_INHERIT );
+
+		}
 	}
 
+
+	bool MyFPSCamera::isActive(){
+		return _isFPSMode;
+	}
 
 	void MyFPSCamera::setPosition(cg::Vector3d position){
 		_position.set(position);
@@ -118,6 +136,12 @@ namespace example {
 
 		onMouseMotion( x, y );
 		
+	}
+	
+	void MyFPSCamera::update( unsigned long ellapsedMilis ) {
+		
+		glutWarpPointer( _winSize[ 0 ] / 2.0, _winSize[ 1 ] / 2.0);
+
 	}
 
 	/*
@@ -161,7 +185,9 @@ namespace example {
 	bool MyFPSCamera::isFPSMode() {
 
 		return _isFPSMode;
-
+}
+	cg::Vector3d MyFPSCamera::getPosition(){
+		return _position;
 	}
 
 }

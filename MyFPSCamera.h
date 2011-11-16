@@ -28,7 +28,8 @@ namespace example {
     class MyFPSCamera : public cg::Entity, 
 		public cg::IDrawListener,
 		public cg::IReshapeEventListener,
-		public cg::IMouseEventListener
+		public cg::IMouseEventListener,
+		public cg::IUpdateListener
 	{
     private:
 		cg::Vector2d _winSize;
@@ -41,16 +42,20 @@ namespace example {
 		MyPhysics fpsCameraPhysics;
 
     public:
-		MyFPSCamera();
+		MyFPSCamera( std::string id );
         virtual ~MyFPSCamera();
         void init();
         void draw();
         void onReshape(int width, int height);
 		void toggleFPSMode();
+		cg::Vector3d getPosition();
+		bool isActive();
 		void setPosition(cg::Vector3d position);
 
 		void onMousePassiveMotion( int x, int y );
 		void onMouseMotion( int x, int y );
+		
+		void update( unsigned long ellapsedMilis );
 
 		GLdouble* getUnchangedMVMatrix();
 

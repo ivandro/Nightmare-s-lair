@@ -5,6 +5,7 @@
 #include "MyPhysics.h"
 #include "MyCamera.h"
 #include "MaterialBank.h"
+#include "Material.h"
 #include "CloudRemanant.h"
 namespace example {
 
@@ -15,12 +16,12 @@ namespace example {
 	private:
 		cg::Vector3d _startPos;
 	    bool _movable, _isDebug;
-		float _shrinkVal,_timer;
+		float _shrinkVal,_timer,_blocksize;
 		int _sign;
 	public:
 		MyPhysics _physics;
 
-		Cloud(std::string id);
+		Cloud(int x, int y, float blocksize,std::string id);
 		~Cloud(void);
 		void init();
 	    void update(unsigned long elapsed_millis);

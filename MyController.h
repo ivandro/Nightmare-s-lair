@@ -23,18 +23,23 @@
 #include "MyLight.h"
 #include "MyTeapot.h"
 #include "MyCamera.h"
+#include "DebugCamera.h"
 #include "MyFPSCamera.h"
-#include "MyBox.h"
+#include "MainCharacter.h"
 #include "Cloud.h"
+#include "MyLight.h"
+#include "Observer.h"
 
 namespace example {
+
+	#define KEY_ESCAPE 27
 
 	class MyController : public cg::Entity,
 		public cg::IKeyboardEventListener,
 		public cg::IDrawListener
 	{
 	public:
-		MyController();
+		MyController( std::string id );
 		~MyController();
 		void init();
         void onKeyPressed(unsigned char key);

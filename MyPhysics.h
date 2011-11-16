@@ -25,7 +25,7 @@ namespace example {
 
 	class MyPhysics {
 	private:
-		cg::Vector3d _position;
+		
 		cg::Quaterniond _orientation;
 		cg::Vector3d _front, _up, _right;
 		double _linearVelocity;
@@ -48,6 +48,7 @@ namespace example {
 		double _axesScale;
 
 	public:
+		cg::Vector3d _position;
 		MyPhysics();
 		~MyPhysics();
 
