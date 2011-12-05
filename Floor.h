@@ -11,8 +11,9 @@ namespace example {
 		public cg::IDrawListener
 	{
 	private:
-		cg::Vector2i _pos;
+		cg::Vector2f _pos;
 		float _blocksize;
+		TextureBank *textureBank;
 
 	public:
 			Floor(int x, int y, float blocksize, std::string id);

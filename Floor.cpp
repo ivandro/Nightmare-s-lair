@@ -3,19 +3,21 @@
 
 namespace example {
 	Floor::Floor(int x, int y, float blocksize, std::string id) : cg::Entity(id) {
-		_pos[0] =x;
-		_pos[1] = y;
+		_pos[0] =x*blocksize;
+		_pos[1] = y*blocksize;
 		_blocksize =blocksize;
 	}
 	Floor::~Floor(){}
 	
 	GLint floorTexture;
 	void Floor::init(){
-		TextureBank *textureBank = (TextureBank *) cg::Registry::instance()->get( "TextureBank" );
-		floorTexture = textureBank->loadTexture("Images\\Grass\\Grass2.jpg");
+		
+		textureBank = (TextureBank *) cg::Registry::instance()->get( "TextureBank" );
 	}
 		
 	void Floor::draw(){
+
+		floorTexture = textureBank->loadTexture( TEXTURE_FLOOR );
 		
 		glEnable( GL_TEXTURE_2D );
 		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
@@ -24,7 +26,7 @@ namespace example {
 		getTexture();
 
 		glPushMatrix();
-		glTranslatef((GLfloat)_pos[0]*_blocksize,0,(GLfloat)_pos[1]*_blocksize);
+		glTranslatef((GLfloat)_pos[0],0,(GLfloat)_pos[1]);
 		glScalef(_blocksize,0,_blocksize);
 		glColor3f(0.5,0.5,0.5);
 

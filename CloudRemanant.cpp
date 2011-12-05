@@ -32,7 +32,7 @@ namespace example {
 		glPushMatrix();
 		glTranslated(_pos[0],_pos[1],_pos[2]);
 		glScaled(_shrinkVal,0.6*_shrinkVal,0.7*_shrinkVal);
-		glutSolidSphere(0.5,5,10);
+		glutSolidSphere(-0.5,5,10);
 		glPopMatrix();
 	   }
 		void CloudRemanant::setPos(cg::Vector3d pos){

@@ -14,6 +14,8 @@ namespace example{
 	private:
 			cg::Vector2i _pos;
 			float _blocksize;
+			GLuint wallTexture;
+			TextureBank *textureBank;
 		
 	public:
 		Wall(int x, int y, float blocksize, std::string id);
@@ -22,6 +24,8 @@ namespace example{
 		void init();
 		void draw();
 		virtual void getTexture() = 0;
+	private:
+		void texture();
 };
 
 }

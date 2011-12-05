@@ -2,12 +2,14 @@
 #define LAMP_H
 
 #include "cg/cg.h"
+#include "BoxEntity.h"
 
 namespace example {
 
 
 	class Lamp : public cg::Entity,
-		public cg::IDrawListener
+		public cg::IDrawListener,
+		public BoxEntity
 	{
 	private:
 		cg::Vector2f _pos;
@@ -15,7 +17,7 @@ namespace example {
 		
 
 	public:
-			Lamp(int x, int y, float blocksize, std::string id);
+			Lamp(int x, int y, float blocksize, std::string id, float maxX, float height,float maxZ);
 			~Lamp();
 			void init();
 			void draw(); 

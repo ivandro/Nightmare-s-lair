@@ -2,14 +2,18 @@
 
 namespace example{
 
- Heart::Heart(std::string id) : cg::Entity(id) {
+ Heart::Heart(int x, int y, float blocksize, std::string id) : cg::Entity(id) {
+		_pos[0] =x*blocksize;
+		_pos[1] = y*blocksize;
+		_blocksize = blocksize;
+
 	}
 	Heart::~Heart() {
 	}
 	void Heart::init() {
 		cg::tWindowInfo win = cg::Manager::instance()->getApp()->getWindowInfo();
-		_debug = false;
-		_position.set(0, -10);
+		_debug = false;	
+		_position.set(0, 0); //	_position.set(0, -10); PODE DAR PROBLEMAS, VER ACIMA
 		_angle = 0.0;
 		_colorFaceB=0.0f;	
 		faceMod=1;
@@ -23,39 +27,42 @@ namespace example{
 	}
 
 	void Heart::draw() {
-        glPushMatrix();
-		glTranslated(_position[0],0,_position[1]);
-		glScaled(0.1,0.1,0.1);
-		glRotated(_angle,0,1,0);
+
+			glPushMatrix();
+			glTranslatef(_pos[0], 0, _pos[1]);
+			glScaled(0.1*_blocksize,0.1*_blocksize,0.1*_blocksize);
+		//	glTranslated(_position[0],0,_position[1]);
+			glScaled(0.1,0.1,0.1);
+			glRotated(_angle,0,1,0);
 		
-			drawSide(0,0);
-			drawSide(180,-2);
-			drawHeart(-2);
-			drawHeart(0);
-		if(_debug){
+				drawSide(0,0);
+				drawSide(180,-2);
+				drawHeart(-2);
+				drawHeart(0);
+			if(_debug){
 			
 			
-			glBegin(GL_LINES);
-			glColor3f(0.0,1.0,0.0); //Green x axis
-			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(10.0,0.0,0.0);
-			glColor3f(1.0,0.0,0.0); //Red y axis
-			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,10.0,0.0);
-			glColor3f(0.0,1.0,1.0); //Yellow z axis cause blue is less visible
-			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,0.0,10.0);
-			glEnd();
+				glBegin(GL_LINES);
+				glColor3f(0.0,1.0,0.0); //Green x axis
+				glVertex3f(0.0,0.0,0.0);
+				glVertex3f(10.0,0.0,0.0);
+				glColor3f(1.0,0.0,0.0); //Red y axis
+				glVertex3f(0.0,0.0,0.0);
+				glVertex3f(0.0,10.0,0.0);
+				glColor3f(0.0,1.0,1.0); //Yellow z axis cause blue is less visible
+				glVertex3f(0.0,0.0,0.0);
+				glVertex3f(0.0,0.0,10.0);
+				glEnd();
 
-		}
-		glPopMatrix();
-		glFlush();			//Finish rendering
-
+			}
+			glPopMatrix();
+			glFlush();			//Finish rendering
 
 	}
 		void Heart::setDebug(bool debug){
 			_debug = debug;
 		}
+
 		void Heart::drawHeart(float translate){
 		glPushMatrix();
         glTranslatef(0,0,translate);

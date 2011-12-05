@@ -2,7 +2,22 @@
  
 namespace example {
 
-	Munition::Munition(std::string id) : cg::Entity(id) {
+	Munition::Munition(std::string id) : cg::Entity(id), timer( 0 ), isActive( false ) {
+
+		this->id = id;
+
+	}
+	Munition::Munition(std::string id, MunitionObserver *munitionObserver ) : cg::Entity(id), timer( 0 ), isActive( false ) {
+
+		this->id = id;
+		this->munitionObserver = munitionObserver;
+
+	}
+
+	void Munition::setMunitionObserver( MunitionObserver *munitionObserver ) {
+
+		this->munitionObserver = munitionObserver;
+
 	}
 	Munition::~Munition() {
 	}
@@ -19,10 +34,10 @@ namespace example {
   		glEndList();
 	}
 	void Munition::init() {
-		_disappear = false;
-		_physics.setPosition(0,1.0,4); //deve ser a posicao do user
+		
+		_physics.setPosition(3,1.01,-3);
 		_physics.setAngularVelocity(1000);
-		_physics.setLinearVelocity(250);
+		_physics.setLinearVelocity(25);
 		makeSphere();
 		makeMunitionModel();
 		makeMaterial();
@@ -42,7 +57,7 @@ namespace example {
 	inline
 	void Munition::makeMunitionModel() {
 		_modelMunition = glGenLists(1);
-		assert(_modelCylinder != 0);
+		assert(_modelMunition != 0);
 		glNewList(_modelMunition,GL_COMPILE);
 			gluSphere	(_sphereObj, 1, 15, 25);
 		glEndList();
@@ -50,60 +65,117 @@ namespace example {
 
 	
 	void Munition::draw() {
-		if(!_disappear){
-		glPushMatrix();
-			glCallList(_materialDL);
-			_physics.applyTransforms();
-			
-			glCullFace(GL_BACK);			
+		if ( isActive ){
 
 			glPushMatrix();
-				glScaled(0.4,0.4,0.4);
-				glCallList(_modelMunition);		
-			glPopMatrix();					
+				glCallList(_materialDL);
+				_physics.applyTransforms();
+			
+				glCullFace(GL_BACK);			
 
-			glCullFace(GL_FRONT);
-		glPopMatrix();
+				glPushMatrix();
+					glScaled(0.4,0.4,0.4);
+					glCallList(_modelMunition);		
+				glPopMatrix();					
+
+				glCullFace(GL_FRONT);
+			glPopMatrix();
+		
 		}
+	
 	}
 
 
 	void Munition::update(unsigned long elapsed_millis) {
+	
+		if( isActive ){
+			
+			fly();
+			double elapsed_seconds = elapsed_millis / (double)1000;
+			_physics.step( elapsed_seconds);
+			actualizeTimer( elapsed_seconds );
+			
+			if ( isEndTimer() ) {
+
+				endTimer();
+
+			}
 		
-		if(!_disappear){
-			//std::cout << "---------------------- " << _physics.getPosition() << std::endl;
-			if(cg::KeyBuffer::instance()->isKeyDown('b')) { //REMOVE --> test
-					attack();		
-			}
+		}
+		else {
 
-			if(cg::KeyBuffer::instance()->isKeyDown('n')) { //REMOVE --> test
-					reborn();		
-			}
+			// the ball is inactive so don't update 
 
-
-			double elapsed_seconds = elapsed_millis / (double)10000;
-				_physics.step(elapsed_seconds);
 		}
 	}
 
-	void Munition::attack() { //lanca a bola para a frente e torna-a invisivel
-		for(int i=0;i<2;i++){
-			_physics.goAhead();
-		}
-		//_disappear = true;
+	void Munition::actualizeTimer( double timePassed ) {
+
+		timer += timePassed;
+
 	}
 
-	void Munition::reborn() { //coloca a bola na posicao do utilizador e torna-a visivel
-		/*MyBox *user = (MyBox*)cg::Registry::instance()->get("Boxmagica");
-		cg::Vector3d position = user->_physics.getPosition();
-		std::cout << "positionkaka: " << position << std::endl;
-		_physics.setPosition(position[1],position[2],position[3]);*/
+	void Munition::shoot() {
 
-		/*SOLUCAO --- o MyBox quando chama a funçao attack, se ainda tiver municoes, deve chamar reborn e fazer
-		Munition *munition = (Munition*)cg::Registry::instance()->get("munition");
-		munition->setPosition(_physics.getPosition());
-		*/
-		_disappear = false;
+		isActive = true;
+		initTimer();
+
 	}
+
+	void Munition::fly() {
+
+		// animation of the fly of the munition
+		_physics.goAhead();
+
+	}
+
+	bool Munition::currentlyActive() {
+
+		return isActive;
+
+	}
+
+	void Munition::setTimer( double seconds ) {
+
+
+		timeToLive = seconds;
+
+	}
+
+	
+	void Munition::initTimer() {
+	
+		timer = 0;
+	
+	}
+
+	bool Munition::isEndTimer() {
+			
+		return timer >= timeToLive;
+
+	}
+
+	void Munition::endTimer() {
+
+			isActive = false;
+			munitionObserver->notActiveNotification( id );
+
+	}
+
+	void Munition::setPosition( cg::Vector3d position ) {
+	
+		_physics.setPosition( position[ 0 ], position[ 1 ], position[ 2 ] );
+	
+	}
+
+	void Munition::setOrientation( cg::Vector3d up, cg::Vector3d front, cg::Vector3d right ){
+	
+		_physics.setUp( up );
+		_physics.setFront( front );
+		_physics.setRight( right );
+	
+	}
+	void Munition::Collision(){}
+	
 
  }

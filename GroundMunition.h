@@ -23,8 +23,11 @@ namespace example {
 		float _rotateFace;
 		int rotatefaceMod;
 
+		cg::Vector2f _pos;
+		float _blocksize;
+
 	public:
-		GroundMunition(std::string id);
+		GroundMunition(int x, int y, float blocksize, std::string id);
 		~GroundMunition();
 		void update(unsigned long elapsed_millis);
 		void init();

@@ -188,15 +188,16 @@ namespace example {
 		
 		// multiply that diference by the x degree of rotation
 	
+	const double xRotationVelocity = 8;
 		GLdouble xDegreeOfRotation = 360.0 / ( GLdouble )_winSize[ 0 ];
 		if ( xDiff > 0 ) {
 
-			cameraRotationVector[ 0 ] += xDegreeOfRotation * 4;// * xDiff;
+			cameraRotationVector[ 0 ] += xDegreeOfRotation * xRotationVelocity;// * xDiff;
 		
 		}
 		else if ( xDiff < 0 ) {
 
-			cameraRotationVector[ 0 ] -= xDegreeOfRotation * 4;
+			cameraRotationVector[ 0 ] -= xDegreeOfRotation * xRotationVelocity;
 
 		}
 		if ( cameraRotationVector[ 0 ] > 180 ) {
@@ -225,9 +226,10 @@ namespace example {
 		// multiply that diference by the y degree of rotation
 		GLdouble yDegreeOfRotation = 180.0 / ( GLdouble )_winSize[ 1 ];
 		GLdouble nextYRotation;
+		const double yRotationVelocity = 8;
 		if ( yDiff > 0 ) {
 
-			nextYRotation = cameraRotationVector[ 1 ] + ( yDegreeOfRotation * 4 );
+			nextYRotation = cameraRotationVector[ 1 ] + ( yDegreeOfRotation * yRotationVelocity );
 			if ( nextYRotation > 90 ) {
 
 				nextYRotation = 90;
@@ -237,7 +239,7 @@ namespace example {
 		}
 		else if ( yDiff < 0 ) {
 
-			nextYRotation = cameraRotationVector[ 1 ] - ( yDegreeOfRotation * 4 );
+			nextYRotation = cameraRotationVector[ 1 ] - ( yDegreeOfRotation * yRotationVelocity );
 			if ( nextYRotation < -90 ) {
 
 				nextYRotation = -90;
@@ -354,6 +356,24 @@ namespace example {
 
 	}
 
+	
+	cg::Vector3d MyPhysics::getFront() {
+
+		return _front;
+
+	}
+
+	cg::Vector3d MyPhysics::getRight() {
+
+		return _right;
+
+	}
+
+	cg::Vector3d MyPhysics::getUp() {
+
+		return _up;
+
+	}
 }
 
 	

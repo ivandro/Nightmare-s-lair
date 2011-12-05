@@ -20,6 +20,7 @@
 #define MY_APP_H
 
 #include "cg/cg.h"
+#include "MainMenu.h"
 #include "MyCamera.h"
 #include "MyFPSCamera.h"
 #include "DebugCamera.h"
@@ -31,18 +32,16 @@
 #include "MyTexturedBox.h"
 #include "MainCharacter.h"
 #include "MyWorld.h"
-#include "Key.h"
-#include "Heart.h"
 #include "Cloud.h"
 #include "CloudRemanant.h"
 #include "Observer.h"
-#include "Stone.h"
 #include "StringWorld.h"
 #include "GrassWorld.h"
-#include "Rabbit.h"
 #include "Munition.h"
-#include "GroundMunition.h"
 #include "TextureBank.h"
+#include "GrassTagFileConverter.h"
+#include "MenuManager.h"
+#include "HUD.h"
 
 namespace example {
 

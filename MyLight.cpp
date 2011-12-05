@@ -20,7 +20,7 @@
 
 namespace example {
 
-	MyLight::MyLight(std::string id) : cg::Entity(id) {
+	MyLight::MyLight(std::string id,float blocksize) : cg::Entity(id), _blocksize(blocksize) {
 	}
 	MyLight::~MyLight() {
 	}
@@ -43,7 +43,7 @@ namespace example {
 		_isDebug = false;
 	}
 	void MyLight::makeLight() {
-		float position[] = {20.0,-20.0,0.0,0.0};
+		float position[] = {20.0f,-20.0f,0.0f,0.0f};
 		float direction[] = {1.0,0.0,0.0};
 		_lightDL = glGenLists(1);
 		assert(_lightDL != 0);
@@ -53,9 +53,10 @@ namespace example {
 	}
 
 	void MyLight::drawSun() {
-
+		cg::Vector3d _pos = _physics.getPosition();
 		glPushMatrix();
-			glTranslatef( -20.0f, 20.0f, 0.0f );
+			glTranslatef( _pos[0]+_blocksize, 3*_blocksize, _pos[2]+3*_blocksize );
+			glScaled(0.6,0.6,0.6);
 			glutSolidSphere( 3.0, 20, 20 );
 		glPopMatrix();
 
@@ -95,7 +96,7 @@ namespace example {
 	void MyLight::draw() {
 		
 		glPushMatrix();
-		
+
 			_physics.applyTransforms();
 			glCallList(_lightDL);
 
@@ -132,5 +133,9 @@ namespace example {
 	}
 	void MyLight::toggleDebugMode() {
 		_isDebug = !_isDebug;
+	}
+
+	void MyLight::setPos(cg::Vector3d pos){
+		_physics.setPosition(pos[0],pos[1],pos[2]);
 	}
 }

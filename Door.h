@@ -3,11 +3,13 @@
 
 #include "cg/cg.h"
 #include "DoorState.h"
+#include "BoxEntity.h"
 
 namespace example{
 
 	class Door: public cg::Entity,
-			public cg::IDrawListener
+			public cg::IDrawListener,
+			public BoxEntity
 	{
 
 	protected:

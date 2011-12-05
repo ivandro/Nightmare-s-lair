@@ -1,9 +1,8 @@
 #include "MainCharacter.h"
-
 namespace example {
 
-	MainCharacter::MainCharacter(std::string id):
-
+	MainCharacter::MainCharacter(int x, int y, float blocksize, std::string id, BlockCollisionsManager * cm, BoxCollisionManager *bm):
+		
 		cg::Entity(id),
 		_movable( true ),
 		_isDebug( false ),
@@ -15,43 +14,97 @@ namespace example {
 		movingRightUp( true ),
 		movingRightForward( true ),
 		movingLeftUp( false ),
-		movingLeftForward( false )
-		{
-
+		movingLeftForward( false ),
+		_CM(cm),
+		_BM(bm),
+		_keyCount(0),
+		_blocksize(blocksize),
+		BoxEntity(new Box(Box::BOX_PLAYER,0.4*blocksize,0.1*blocksize,0.1*blocksize), 0, cg::Vector3f(0,0,0)) //Change later
+	
+	{
+		//_physics.setPosition(x*blocksize+blocksize/2,0,y*blocksize+blocksize/2); DEBUG
+		_physics.setPosition(0,0,0);
 	}
 
 	MainCharacter::~MainCharacter() {
 	}
 
 	void MainCharacter::init() {
-		_physics.setPosition(3,1.01,-3);
 		_physics.setAngularVelocity(1000); //considerar sizeOfBlock/2 em x de 10  
-		_physics.setLinearVelocity(100); 
+		_physics.setLinearVelocity(100);
+		_LifeCount = 3;
+		_MunitionCount = 3;
+		munitionManager = ( MunitionManager * )cg::Registry::instance()->get( "munition manager" );
 	}
 
 	void MainCharacter::update(unsigned long elapsed_millis) {
+		
+		rechargeMunition( elapsed_millis / (double)1000 );
+
 		if(_movable && !_isDebug){
-			if(cg::KeyBuffer::instance()->isKeyDown('w')) {
+
+			cg::Vector3d oldPos = _physics.getPosition();
+
+			if ( cg::KeyBuffer::instance()->isKeyDown( 'l' ) && munitionRecharged ) {
+				
+				std::string munitionId;
+				
+				if ( munitionManager->bindMunition( &munitionId ) ) {
+
+					std::cout << "gonna shoot munition " << munitionId << std::endl;
+
+					munitionManager->setMunitionTimeToLive( munitionId, 1 );
+				
+					// posicionar a bola
+					
+					cg::Vector3d position = _physics.getPosition();
+					munitionManager->setMunitionPosition( munitionId, position );
+
+					// orientar a bola
+	
+					cg::Vector3d up = _physics.getUp();
+					cg::Vector3d front = _physics.getFront();
+					cg::Vector3d right = _physics.getRight();
+					munitionManager->setMunitionOrientation( munitionId, up, front, right );
+
+					// disparar a bola
+					munitionManager->shootMunition( munitionId );
+					
+				}
+				else {
+
+					// there are no munitions available
+					std::cout << "There are no munitions available" << std::endl;
+
+				}
+
+				initializeMunitionRecharge( 0.2 );
+
+			}		
+	if(cg::KeyBuffer::instance()->isKeyDown('w')) {
 				moveRightArm();
 				moveLeftArm();
 				moveRightLeg();
 				moveLeftLeg();
+				
+
 				_physics.goAhead();
-		
 			}
 			if(cg::KeyBuffer::instance()->isKeyDown('s')) {
 				moveRightArm();
 				moveLeftArm();
 				moveRightLeg();
 				moveLeftLeg();
+
 				_physics.goBack();	
-		
+
 			}
 			if(cg::KeyBuffer::instance()->isKeyDown('a')) {
 				moveRightArm();
 				moveLeftArm();
 				moveRightLeg();
 				moveLeftLeg();
+
 				_physics.strafeLeft();
 			}
 			if(cg::KeyBuffer::instance()->isKeyDown('d')) {
@@ -59,22 +112,96 @@ namespace example {
 				moveLeftArm();
 				moveRightLeg();
 				moveLeftLeg();
+
 				_physics.strafeRight();
 			}
-			// _lastposition.set(_physics.getPosition()); REMOVE
-			MyFPSCamera * fps = (MyFPSCamera *) cg::Registry::instance()->get("FPSCamera");
-			fps->setPosition(_physics.getPosition());
+
 
 			double elapsed_seconds = elapsed_millis / (double)10000;
 			_physics.step(elapsed_seconds);
+
+			
+			cg::Vector3d newPos = _physics.getPosition();
+			checkColisions(oldPos,newPos);
+
+			cg::Vector3d _temp = _physics.getPosition();
+			
+			MyFPSCamera * fps = (MyFPSCamera *) cg::Registry::instance()->get("FPSCamera");
+			fps->setPosition(_temp);
+							
+			Cloud * _cloud = (Cloud *)cg::Registry::instance()->get("Nuvem");
+			_cloud->setPos(_temp[0],_temp[2]);
+			
+			MyLight * _sun = (MyLight *)cg::Registry::instance()->get("Sun");
+			_sun->setPos(cg::Vector3d(_temp[0],_temp[1],_temp[2]));
+
+			_center=cg::Vector3f(_temp[0],_temp[1],_temp[2]);
 		}
+
+	}
+
+	void MainCharacter::rechargeMunition( double seconds ) {
+
+		munitionRechargeTime -= seconds;
+
+		if ( munitionRechargeTime <= 0 ) {
+
+			munitionRecharged = true;
+
+		}
+		else {
+
+			// munition still recharging
+
+		}
+
+	}
+	
+	void MainCharacter::initializeMunitionRecharge( double seconds ) {
+		
+		munitionRecharged = false;
+		munitionRechargeTime = seconds;
 	}
 
 	void MainCharacter::onMousePassiveMotion(int x, int y) {
 
 	}
 
-	int drawPasses = 100;
+	
+		
+	void MainCharacter::onMouse(int button, int state, int x, int y) {
+
+		if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN ) {
+			if ( munitionRecharged ) {
+				
+				std::string munitionId;
+				
+				if ( munitionManager->bindMunition( &munitionId ) ) {
+
+					std::cout << "gonna shoot munition " << munitionId << std::endl;
+
+					munitionManager->setMunitionTimeToLive( munitionId, 1 );
+				
+					// posicionar a bola
+					
+					cg::Vector3d position = _physics.getPosition();
+					munitionManager->setMunitionPosition( munitionId, position );
+
+					// orientar a bola
+	
+					cg::Vector3d up = _physics.getUp();
+					cg::Vector3d front = _physics.getFront();
+					cg::Vector3d right = _physics.getRight();
+					munitionManager->setMunitionOrientation( munitionId, up, front, right );
+
+					// disparar a bola
+					munitionManager->shootMunition( munitionId );
+					
+				}
+			}
+
+		}
+	}
 
 	/*
 	** name: fpsTransformationBegin
@@ -97,6 +224,7 @@ namespace example {
 		
 		glMatrixMode( GL_MODELVIEW );
 		// safe the actual modelview matrix
+		
 		
 		glPushMatrix();
 
@@ -121,17 +249,17 @@ namespace example {
 	void drawArm( GLfloat rotationDegree, GLfloat xAxis, GLfloat yAxis, GLfloat zAxis ) {
 
 		GLfloat 
-			armAxesPosX = 0.25,
-		    armAxesPosY = 0.0, 
-			armAxesPosZ = 0.0;
+			armAxesPosX = 0.25f,
+		    armAxesPosY = 0.0f, 
+			armAxesPosZ = 0.0f;
 		GLfloat
-			armScaleX = 4.0,
-			armScaleY = 1.0,
-			armScaleZ = 0.7;
+			armScaleX = 4.0f,
+			armScaleY = 1.0f,
+			armScaleZ = 0.7f;
 		GLfloat 
-			scaleAdjustFactorX = ( armScaleX != 1.0 ) ? ( armScaleX / 2.0 ) : 0.0,
-			scaleAdjustFactorY = ( armScaleY != 1.0 ) ? ( armScaleY / 2.0 ) : 0.0, 
-			scaleAdjustFactorZ = ( armScaleZ != 1.0 ) ? ( armScaleZ / 2.0 ) : 0.0;
+			scaleAdjustFactorX = ( armScaleX != 1.0f ) ? ( armScaleX / 2.0f ) : 0.0f,
+			scaleAdjustFactorY = ( armScaleY != 1.0f ) ? ( armScaleY / 2.0f ) : 0.0f, 
+			scaleAdjustFactorZ = ( armScaleZ != 1.0f ) ? ( armScaleZ / 2.0f ) : 0.0f;
 
 			scaleAdjustFactorX *= ( armAxesPosX > 0 ) ? -1 : 1;
 			scaleAdjustFactorY *= ( armAxesPosY > 0 ) ? -1 : 1;
@@ -144,7 +272,7 @@ namespace example {
 			glTranslatef( -armAxesPosX + scaleAdjustFactorX, -armAxesPosY + scaleAdjustFactorY, -armAxesPosZ + scaleAdjustFactorZ );
 			glScalef( armScaleX, armScaleY, armScaleZ );
 
-			glutSolidCube( 1 );
+			glutSolidCube( -1 );
 
 		glPopMatrix();
 
@@ -153,17 +281,17 @@ namespace example {
 	void drawLeg( GLfloat rotationDegree, GLfloat xAxis, GLfloat yAxis, GLfloat zAxis ) {
 
 		GLfloat 
-			armAxesPosX = 0.0,
-		    armAxesPosY = 0.25, 
-			armAxesPosZ = 0.0;
+			armAxesPosX = 0.0f,
+		    armAxesPosY = 0.25f, 
+			armAxesPosZ = 0.0f;
 		GLfloat
-			armScaleX = 1.0,
-			armScaleY = 4.0,
-			armScaleZ = 0.7;
+			armScaleX = 1.0f,
+			armScaleY = 4.0f,
+			armScaleZ = 0.7f;
 		GLfloat 
-			scaleAdjustFactorX = ( armScaleX != 1.0 ) ? ( armScaleX / 2.0 ) : 0.0,
-			scaleAdjustFactorY = ( armScaleY != 1.0 ) ? ( armScaleY / 2.0 ) : 0.0, 
-			scaleAdjustFactorZ = ( armScaleZ != 1.0 ) ? ( armScaleZ / 2.0 ) : 0.0;
+			scaleAdjustFactorX = ( armScaleX != 1.0f ) ? ( armScaleX / 2.0f ) : 0.0f,
+			scaleAdjustFactorY = ( armScaleY != 1.0f ) ? ( armScaleY / 2.0f ) : 0.0f, 
+			scaleAdjustFactorZ = ( armScaleZ != 1.0f ) ? ( armScaleZ / 2.0f ) : 0.0f;
 
 			scaleAdjustFactorX *= ( armAxesPosX > 0 ) ? -1 : 1;
 			scaleAdjustFactorY *= ( armAxesPosY > 0 ) ? -1 : 1;
@@ -176,7 +304,7 @@ namespace example {
 			glTranslatef( -armAxesPosX + scaleAdjustFactorX, -armAxesPosY + scaleAdjustFactorY, -armAxesPosZ + scaleAdjustFactorZ );
 			glScalef( armScaleX, armScaleY, armScaleZ );
 
-			glutSolidCube( 1 );
+			glutSolidCube( -1 );
 
 		glPopMatrix();
 
@@ -193,7 +321,7 @@ namespace example {
 
 			glScalef( armScaleX, armScaleY, armScaleZ );
 
-			glutSolidCube( 1 );
+			glutSolidCube( -1 );
 
 		glPopMatrix();
 
@@ -212,7 +340,7 @@ namespace example {
 			//scale to porportions
 			glScalef( headScaleX, headScaleY, headScaleZ );
 
-			glutSolidCube( 1 );
+			glutSolidCube( -1 );
 
 		glPopMatrix();
 
@@ -320,8 +448,8 @@ namespace example {
 	
 	
 	GLdouble 
-		xchar = 0.63,
-		ychar = 1.25,
+		xchar = 0.0,
+		ychar = 1.8,
 		zchar = 0.0;
 
 
@@ -330,9 +458,8 @@ namespace example {
 	** description: draw the main character
 	*/
 	void MainCharacter::drawMainCharacter() {
-
-		glScaled( 0.375, 0.375, 0.375 );
-
+		float scale = 0.07*_blocksize;
+		glScalef(scale,scale, scale);
 			// drawchest at center
 		drawChest();
 			// draw rightArm at top right corner of chest
@@ -363,8 +490,12 @@ namespace example {
 	}
 
 	void MainCharacter::draw() {
+	
+			if( _isDebug){
+	
+				debugBox(cg::Vector3f(0,1,1));
+			}
 
-		
 		MyFPSCamera *fps = (MyFPSCamera *) cg::Registry::instance()->get( "FPSCamera" );
 		if ( fps->isFPSMode() ) {
 
@@ -382,9 +513,7 @@ namespace example {
 
 			glTranslated( xchar, ychar, zchar );
 			drawMainCharacter();
-			//glEnable( GL_LIGHTING );
-		glPopMatrix();
-			glEnable( GL_LIGHTING );
+		
 		glPopMatrix();
 
 
@@ -394,14 +523,75 @@ namespace example {
 		
 		}
 
+
+
+
 	}
 
 	void MainCharacter::togglemovable(){
 		_movable = !_movable;
+		Cloud * _cloud = (Cloud *)cg::Registry::instance()->get("Nuvem");
+		_cloud->setPos(_physics.getPosition()[0],_physics.getPosition()[2]);
 	}
 
 	void MainCharacter::toggleDebugMode() {
 		_isDebug = !_isDebug;
+	}
+	void MainCharacter::checkColisions(cg::Vector3d oldPos, cg::Vector3d newPos){
+		int oldx = ((int)oldPos[0]) /_blocksize;
+		int newx = ((int)newPos[0]) /_blocksize;
+		int oldy = ((int)oldPos[2]) /_blocksize;
+		int newy = ((int)newPos[2]) /_blocksize;
+		if(oldx >=0 && newx >=0 && oldy >=0 && newy >=0)  //BlockColisions
+			if(_CM->checkCollision(newx,newy)){
+				if(oldx != newx && oldy!=newy )
+					_physics.setPosition(oldPos[0],newPos[1],oldPos[2]);
+				else if(oldx != newx)
+					_physics.setPosition(oldPos[0],newPos[1],newPos[2]);
+				else if(oldy!=newy)
+					_physics.setPosition(newPos[0],newPos[1],oldPos[2]);
+			}
+			BoxCollisionManager::CollisionStats *check = _BM->checkBoxColision(_box,oldPos,newPos,getId()); //Box Collisions
+					
+			if(check != NULL){
+				if(check->colType == BoxCollisionManager::CollisionType::XZ)
+					_physics.setPosition(oldPos[0],newPos[1],oldPos[2]);
+				else if(check->colType == BoxCollisionManager::CollisionType::X)
+					_physics.setPosition(oldPos[0],newPos[1],newPos[2]);
+				else if(check->colType == BoxCollisionManager::CollisionType::Z)
+					_physics.setPosition(newPos[0],newPos[1],oldPos[2]);
+				
+				Box::EntityType type = check->entType;
+				if(type==Box::EntityType::BOX_ENEMY){
+					
+				} else if (type==Box::EntityType::BOX_KEY){
+					_keyCount++;
+					if(_keyCount==3){
+						Door *d = (Door *) cg::Registry::instance()->get( "Door" );
+						d->openClose();
+					}
+				}
+				if(_keyCount==3 && type ==Box::EntityType::BOX_DOOR){
+					std::cout << "LEVEL OVER";
+				}
+				//Decide if dmg is necessary
+			}
+	}
+
+	int MainCharacter::getNLifes() {
+		return _LifeCount;
+	}
+
+	int MainCharacter::getNMunitions() {
+		return _MunitionCount;
+	}
+
+	cg::Vector2d MainCharacter::getCharPos(){
+		cg::Vector2d charPos;
+		cg::Vector3d pos = _physics.getPosition();
+		charPos[0] = pos[0]/_blocksize; //devolve x
+		charPos[1] = pos[2]/_blocksize; //devolve z
+		return charPos;
 	}
 
 }

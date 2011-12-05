@@ -3,33 +3,34 @@
 #include "World.h"
 #include "GrassFloor.h"
 #include "GrassWall.h"
-#include "Cloud.h"
-#include "CloudRemanant.h"
 #include "GrassLamp.h"
 #include "GrassDecoration.h"
 #include "GrassDoor.h"
+#include "Spike.h"
+#include "Rabbit.h"
+#include "Key.h"
 #include "cg/cg.h"
+
 
 namespace example {
 
 	class GrassWorld : public World{
 	private:
-		int _grassCount, _wallCount, _lampCount, _decoCount;
-		bool _player, _door;
 
 	public:
 		GrassWorld();
 		~GrassWorld();
-		void createFloor(int x,int y,float blocksize);
-		void createWall(int x,int y,float blocksize); 
-		void createDecoration(int x,int y,float blocksize);
-		void createLamp(int x,int y,float blocksize);
-		void createEnemy(int x,int y,float blocksize);
-		void createObstacle(int x,int y,float blocksize);
-		void createKey(int x,int y,float blocksize);
-		void createPowerUp(int x,int y,float blocksize);
-		void createDoor(int x,int y,float blocksize);
-		void createPlayer(int x,int y,float clocksize);
+		
+		 Floor * createFloor(int x,int y,float blocksize, std::string id); //WHITE
+		 Wall * createWall(int x,int y,float blocksize, std::string id);  //BLACK
+		 Decoration * createDecoration(int x,int y,float blocksize, std::string id); //GREEN
+		 Lamp * createLamp(int x,int y,float blocksize, std::string id); //YELLOW
+		 Enemy * createEnemy(int x,int y,float blocksize, std::string id);  //RED
+		 Obstacle * createObstacle(int x,int y,float blocksize, std::string id); //GREY
+		 Key * createKey(int x,int y,float blocksize, std::string id);  //MAGENTA
+		 Powerup * createPowerUp(int x,int y,float blocksize, std::string id); //BLUE
+		 Door *createDoor(int x,int y,float blocksize, std::string id); //BROWN
+		 MainCharacter *createPlayer(int x,int y,float clocksize, std::string id); //CYAN
 
 
 	};

@@ -56,6 +56,13 @@ _position[1],_position[2],_up[0],_up[1],_up[2]);*/
 
 			_physics.cameraTranslation( eyeX, eyeY, eyeZ );
 
+			cg::Vector3d *newFront = new cg::Vector3d( cos( _physics.getCameraRotationX() * degreeToRadianus ), 0.0, sin( _physics.getCameraRotationX() * degreeToRadianus ) );
+			cg::Vector3d *newRight = new cg::Vector3d( -sin( _physics.getCameraRotationX() * degreeToRadianus ), 0.0, cos( _physics.getCameraRotationX() * degreeToRadianus ) );
+
+			
+			_physics.setFront ( *newFront );
+			_physics.setRight( *newRight );
+
 		}
 		/*else{
 			glutSetCursor( GLUT_CURSOR_INHERIT );

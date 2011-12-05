@@ -29,15 +29,25 @@
 #include "Cloud.h"
 #include "MyLight.h"
 #include "Observer.h"
+#include "TextureBank.h"
+#include "NightTagFileConverter.h"
+#include "PauseMenu.h"
 
 namespace example {
 
 	#define KEY_ESCAPE 27
+	#define KEY_PAUSE 'p'
 
 	class MyController : public cg::Entity,
 		public cg::IKeyboardEventListener,
 		public cg::IDrawListener
 	{
+	private:
+		
+			TextureBank *textureBank;
+			TagFileBitmapConverter *tagFileBitmapConverter;
+			std::map< TextureTags, GLint > *textureBankSave;
+
 	public:
 		MyController( std::string id );
 		~MyController();
@@ -46,7 +56,6 @@ namespace example {
         void onKeyReleased(unsigned char key);
         void onSpecialKeyPressed(int key);
         void onSpecialKeyReleased(int key);
-		void drawOverlay();
 	};
 }
 

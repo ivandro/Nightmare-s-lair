@@ -1,8 +1,12 @@
 #include "Key.h"
-
+ 
 namespace example {
 	 
-	Key::Key(std::string id) : cg::Entity(id) {
+	Key::Key(int x, int y, float blocksize, std::string id) : cg::Entity(id),
+		BoxEntity(new Box(Box::BOX_KEY,1*blocksize,0.2*blocksize,0.2*blocksize),0,cg::Vector3f(x*blocksize+blocksize*0.5,0,y*blocksize+blocksize*0.5)){
+		_pos[0] =x*blocksize+blocksize*0.4;
+		_pos[1] = y*blocksize+blocksize*0.4;
+		_blocksize =blocksize;
 	}
 	Key::~Key() {
 	}
@@ -19,9 +23,13 @@ namespace example {
   		glEndList();
 	}
 	void Key::init() {
-		//_physics.setPosition(0,0,0);
-		_physics.setPosition(0,1.0,-5);
-		//_physics.setAngularVelocity(20.0);
+		
+		_rotateFace=0.3f;
+		rotatefaceMod=1;
+		_angle = 60.0f;
+		faceMod=1;
+
+		_physics.setPosition(0,0,0);
 		makeCylinder();
 		makeCylinderModel();
 		makeTorus();
@@ -30,8 +38,16 @@ namespace example {
 		makeMaterial();
 	}
 	void Key::update(unsigned long elapsed_millis) {
-		/*double elapsed_seconds = elapsed_millis / (double)1000;
-		_physics.step(elapsed_seconds);*/
+
+		_rotateFace =_rotateFace + (float)rotatefaceMod*0.15f;
+			
+		if(_rotateFace > 10.0f|| _rotateFace < 0.0f)
+			rotatefaceMod=-1*rotatefaceMod;	
+
+		_angle = _angle + (float)faceMod*1.0f;
+			
+		if(_angle >= 85.0f|| _angle <= 40.0f)
+			faceMod=-1*faceMod;	
 	}
 
 	inline
@@ -72,14 +88,19 @@ namespace example {
 	}
 	
 	void Key::draw() {
+		debugBox(cg::Vector3f(1,0,1));
 		glPushMatrix();
+			
 			glCallList(_materialDL);
 			_physics.applyTransforms();
 			
 			glCullFace(GL_BACK);
-			
-			glRotated(30,0,1,1);
+			glTranslatef(_pos[0], 0.2*_blocksize, _pos[1]);
+			glScaled(0.1*_blocksize,0.1*_blocksize,0.1*_blocksize);
+		
+			glRotated(_angle,0,1,0);			
 			glScaled(0.2,0.2,0.2);
+			glTranslated(0,_rotateFace,0);
 
 			glPushMatrix();
 				glTranslated(0,0,2);
@@ -184,10 +205,12 @@ inline
 		glPushMatrix();
 			glTranslated(0,-2,8);
 			drawCube();
-		glPopMatrix();
-
-	
+		glPopMatrix();	
 
 		glEndList();
+	}
+
+	void Key::playerCollision() {
+		state.disable();
 	}
  }

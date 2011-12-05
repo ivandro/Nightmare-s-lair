@@ -17,10 +17,12 @@ namespace example {
 		float _colorFaceB,_colorSidesB;
 		int faceMod,sidesMod;
 
+		cg::Vector2f _pos;
+		float _blocksize;
 
 	public:
 
-		Heart(std::string id);
+		Heart(int x, int y, float blocksize, std::string id);
 		~Heart();
 		void init();
 		void drawHeart(float translate);

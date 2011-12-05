@@ -12,28 +12,13 @@ namespace example{
 	Wall::~Wall(void)
 	{
 	}
-	void texture();
-	static GLubyte checkImage[64][64][4];
-	GLuint wallTexture;
 	void Wall::init(){ 
-		TextureBank *textureBank = (TextureBank *) cg::Registry::instance()->get( "TextureBank" );
-		wallTexture = textureBank->loadTexture("Images\\Wall\\dirtyWall\\grass.tga");
-
-		for ( int i= 0; i < 64; i++) {
-
-			for ( int j = 0; j < 64; j++ ) {
-				int c = ( ( ( i & 0x8 ) == 0 ) ^ ( ( j & 0x8 ) == 0 ) ) * 255;
-				checkImage[i][j][0] = (GLubyte)c;
-				checkImage[i][j][1] = (GLubyte)c;
-				checkImage[i][j][2] = (GLubyte)c;
-				checkImage[i][j][3] = (GLubyte)255;
-			}
-		}
-
+		
+		textureBank = (TextureBank *) cg::Registry::instance()->get( "TextureBank" );
 
 	}
 	
-	void texture() {
+	void Wall::texture() {
 	
 		char filename[] = "Images\\Wall\\dirtyWall\\grass.tga";
 		// adequerir informação sobre imagem
@@ -73,6 +58,8 @@ namespace example{
 	}
 		
 	void Wall::draw() {
+		
+		wallTexture = textureBank->loadTexture(TEXTURE_WALL);
 
 		glEnable( GL_TEXTURE_2D );
 		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
@@ -115,18 +102,18 @@ namespace example{
 		glPushMatrix();
 			glBegin(GL_POLYGON);
 				glTexCoord2f( 1.0f, 0.0f );glVertex3f(0.0f,0.0f,0.0f);
-				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,0.0f,0.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(1.0f,0.0f,0.0f);
 				glTexCoord2f( 0.0f, 1.0f );glVertex3f(1.0f,1.0f,0.0f);
-				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,1.0f,0.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(0.0f,1.0f,0.0f);
 			glEnd();
 		glPopMatrix();
 
 		glPushMatrix();
 			glBegin(GL_POLYGON);
-				glTexCoord2f( 0.0f, 1.0f );glVertex3f(1.0f,1.0f,1.0f);
-				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,0.0f,1.0f);
-				glTexCoord2f( 1.0f, 0.0f );glVertex3f(0.0f,0.0f,1.0f);
-				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,1.0f,1.0f);
+				glTexCoord2f( 1.0f, 1.0f );glVertex3f(1.0f,1.0f,1.0f);
+				glTexCoord2f( 1.0f, 0.0f );glVertex3f(1.0f,0.0f,1.0f);
+				glTexCoord2f( 0.0f, 0.0f );glVertex3f(0.0f,0.0f,1.0f);
+				glTexCoord2f( 0.0f, 1.0f );glVertex3f(0.0f,1.0f,1.0f);
 				
 
 			glEnd();

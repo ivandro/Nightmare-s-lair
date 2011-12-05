@@ -2,7 +2,10 @@
  
 namespace example {
 
-	GroundMunition::GroundMunition(std::string id) : cg::Entity(id) {
+	GroundMunition::GroundMunition(int x, int y, float blocksize, std::string id) : cg::Entity(id) {
+		_pos[0] =x*blocksize;
+		_pos[1] = y*blocksize;
+		_blocksize = blocksize;
 	}
 	GroundMunition::~GroundMunition() {
 	}
@@ -19,13 +22,10 @@ namespace example {
   		glEndList();
 	}
 	void GroundMunition::init() {
-	
 		_rotateFace=0.0f;
 		rotatefaceMod=1;
 
-		//_physics.setPosition(0,0,0);
-		_physics.setPosition(0,1.0,4);
-		//_physics.setAngularVelocity(20.0);
+		_physics.setPosition(0,0,0);
 		makeSphere();
 		makeGroundMunitionModel();
 		makeMaterial();
@@ -44,7 +44,7 @@ namespace example {
 	inline
 	void GroundMunition::makeGroundMunitionModel() {
 		_modelGroundMunition = glGenLists(1);
-		assert(_modelCylinder != 0);
+		assert(_modelGroundMunition != 0);
 		glNewList(_modelGroundMunition,GL_COMPILE);
 			gluSphere	(_sphereObj, 1, 15, 25);
 		glEndList();
@@ -52,31 +52,32 @@ namespace example {
 
 	
 	void GroundMunition::draw() {
-		glPushMatrix();
-			glCallList(_materialDL);
-			_physics.applyTransforms();
+			glPushMatrix();
+				glCallList(_materialDL);
+				_physics.applyTransforms();
 			
-			glCullFace(GL_BACK);			
+				glCullFace(GL_BACK);
 
-			glScaled(0.4,0.4,0.4);
+				glTranslatef(_pos[0], 0, _pos[1]);
+				glScaled(0.1*_blocksize,0.1*_blocksize,0.1*_blocksize);
 
-			glPushMatrix();
-				glTranslated(0,_rotateFace,0);
-				glCallList(_modelGroundMunition);		
-			glPopMatrix();	
+				glPushMatrix();
+					glTranslated(0,_rotateFace,0);
+					glCallList(_modelGroundMunition);		
+				glPopMatrix();	
 
-			glPushMatrix();
-				glTranslated(1.5,_rotateFace/2,-1);
-				glCallList(_modelGroundMunition);		
-			glPopMatrix();	
+				glPushMatrix();
+					glTranslated(1.5,_rotateFace/2,-1);
+					glCallList(_modelGroundMunition);		
+				glPopMatrix();	
 
-			glPushMatrix();
-				glTranslated(1.5,_rotateFace/3,1);
-				glCallList(_modelGroundMunition);		
-			glPopMatrix();	
+				glPushMatrix();
+					glTranslated(1.5,_rotateFace/3,1);
+					glCallList(_modelGroundMunition);		
+				glPopMatrix();	
 
-			glCullFace(GL_FRONT);
-		glPopMatrix();
+				glCullFace(GL_FRONT);
+			glPopMatrix();
 	}
 
 
@@ -91,6 +92,5 @@ namespace example {
 			
 		//}
 	}
-
 
  }

@@ -36,16 +36,17 @@ namespace example {
 		MyPhysics _physics;
 		int _lightDL;
 		void makeLight();
+		float _blocksize;
 
 	public:
-		MyLight(std::string id);
+		MyLight(std::string id,float blocksize);
 		~MyLight();
 		void init();
 		void update(unsigned long elapsed_millis);
 		void draw();
 		void drawSun();
 		void fpsTransformationBegin();
-
+		void setPos(cg::Vector3d pos);
 		void toggleDebugMode();
 	};
 }

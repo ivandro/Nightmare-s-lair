@@ -5,12 +5,14 @@
 #include <string>
 #include "MyPhysics.h"
 #include "MaterialBank.h"
+#include "BoxEntity.h"
 
 namespace example {
 
 	class Key : public cg::Entity,
 		public cg::IUpdateListener,
-		public cg::IDrawListener 
+		public cg::IDrawListener,
+		public BoxEntity
 	{
 	private:
 		MyPhysics _physics;
@@ -24,12 +26,19 @@ namespace example {
 		void drawCube();
 		void makeHead();
 		void makeMaterial();
+		cg::Vector2f _pos;
+		float _blocksize;
+		float _rotateFace;
+		double _angle;
+		int rotatefaceMod, faceMod;
+
 	public:
-		Key(std::string id);
+		Key(int x, int y, float blocksize, std::string id);
 		~Key();
 		void init();
 		void update(unsigned long elapsed_millis);
 		void draw();
+		void playerCollision();
 	};
 
 }

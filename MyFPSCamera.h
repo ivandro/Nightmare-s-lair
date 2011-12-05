@@ -22,6 +22,7 @@
 #include <string>
 #include "cg/cg.h"
 #include "MyPhysics.h"
+#include "Munition.h"
 
 namespace example {
 

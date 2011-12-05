@@ -6,7 +6,16 @@ namespace example {
 	/*
 	* TextureBank constructor
 	*/
-	TextureBank::TextureBank( std::string id ): cg::Entity( id ), position( 0 ), width( 0 ), height( 0 ), textureObjectId( 0 ) {
+	TextureBank::TextureBank( std::string id , TagFileBitmapConverter *tagFileBitmapConverter ): 
+		cg::Entity( id ),
+		position( 0 ),
+		width( 0 ),
+		height( 0 ),
+		textureObjectId( 0 ),
+		tagFileBitmapConverter( tagFileBitmapConverter ){
+
+		textureBankSave = new std::map< TextureTags, GLint >();
+		resourceLoader = new ResourceLoader();
 
 	}
 
@@ -27,20 +36,20 @@ namespace example {
 	/*
 	** name: loadTexture
 	** description: This function load the textures and configure them, in this way you can start to associate it with the vertices
-	** parameter: imagePath - path of the image that gonna be used for the texture
+	** parameter: tag - the tag that identify the texture to be loaded
 	*/
-	GLint TextureBank::loadTexture( char* imagePath ) {
+	GLint TextureBank::loadTexture( TextureTags tag ) {
 		//std::cout << " Chamaram-me! " << std::endl;
-		textureObjectId = textureBankSafe[ imagePath ];
+		textureObjectId = (*textureBankSave)[ tag ];
 		// If the image was'nt seen yet
 		if ( textureObjectId == 0 ) {
 			
 			// load the image
-			BYTE *bits = loadImage( imagePath );
+			BYTE *bits = loadImage( tag );
 			// create a Texture Object of the loaded image
 			textureObjectId = makeTextureObject( bits );
 			// safe pair < imagePath, TextureObjectId >
-			textureBankSafe[ imagePath ] = textureObjectId;
+			( *textureBankSave )[ tag ] = textureObjectId;
 
 		}
 		// Else
@@ -53,41 +62,41 @@ namespace example {
 
 	}
 
+	std::string TextureBank::convert( TextureTags tag ) { 
+
+		return tagFileBitmapConverter->convert( tag );
+		
+	} 
+
+	void TextureBank::changeConverter( TagFileBitmapConverter **inout_tagFileBitmapConverter,
+		std::map< TextureTags, GLint> **inout_textureBankSave ) {
+
+			
+		std::map< TextureTags, GLint > *oldTextureBankSave = this->textureBankSave;
+		this->textureBankSave = *inout_textureBankSave;
+		*inout_textureBankSave = oldTextureBankSave;
+
+		TagFileBitmapConverter *oldTagFileBitmapConverter = this->tagFileBitmapConverter;
+
+		this->tagFileBitmapConverter = *inout_tagFileBitmapConverter;
+		*inout_tagFileBitmapConverter = oldTagFileBitmapConverter;
+
+	}
+
 	/*
 	** name: loadImage
 	** description: load the image from the image into the application
 	** parameter: imagePath - path from the image to load
 	** return: Array of bytes representing the image
 	*/
-	BYTE *TextureBank::loadImage( char *imagePath ) {
+	BYTE *TextureBank::loadImage( TextureTags tag ) {
 
-		char *filename = imagePath;
+		std::string str = convert( tag );
+		BYTE *bits = resourceLoader->loadImage( str );
 
-		// adequerir informação sobre imagem
-		FREE_IMAGE_FORMAT fileFormat = FreeImage_GetFileType( filename, 0 );
-		FIBITMAP *fiWall = FreeImage_Load( fileFormat, filename, 0);
-		fiWall = FreeImage_ConvertTo32Bits( fiWall );
-		if ( fiWall != NULL ) {
-			width = FreeImage_GetWidth( fiWall );
-			height = FreeImage_GetHeight( fiWall );
-
-			BYTE *bits = new BYTE[ width * height * 4 ];
-
-			BYTE *pixels = (BYTE *)FreeImage_GetBits( fiWall );
-
-			for(int pix=0; pix < width * height; pix++) {
-
-				bits[ pix*4 + 0 ] = pixels[ pix*4 + 2 ];
-				bits[ pix * 4 + 1 ] = pixels[ pix * 4 + 1 ];
-				bits[ pix * 4 + 2 ] = pixels[ pix * 4 + 0 ];
-				bits[ pix* 4 + 3 ] = pixels[ pix * 4  + 3 ];
-
-			}
-
-			return bits;
-
-		}
-
+		width = resourceLoader->getLastImageWidth();
+		height = resourceLoader->getLastImageHeight();
+		return bits;
 	}
 
 	/*

@@ -31,6 +31,7 @@ namespace example {
 		void CreateRemanant();
 		void timeRemanant();
 		void toggleDebugMode();
+		void setPos(float x, float z);
 	};
 }
 

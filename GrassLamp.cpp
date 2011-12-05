@@ -2,7 +2,7 @@
 
 namespace example{
 
-	GrassLamp::GrassLamp(int x, int y, float blocksize, std::string id) : Lamp(x,y,blocksize,id) {
+	GrassLamp::GrassLamp(int x, int y, float blocksize, std::string id) : Lamp(x,y,blocksize,id,0.05,0.35,0.05) {
 		_mod = 1;
 		_inc =0.1f;
 	}
@@ -10,7 +10,7 @@ namespace example{
 	GrassLamp::~GrassLamp() {}
 
 	void  GrassLamp::update(unsigned long elapsed_millis){
-		 _inc += 0.002*(float)_mod; // soften the animation
+		 _inc += 0.002f*(float)_mod; // soften the animation
 
 		if(_inc < 0.0f || _inc > 1.0f/3.0f)
 			_mod = -1*_mod;	
@@ -46,9 +46,9 @@ namespace example{
 			glScalef(0.1f,0.125f,0.1f);
 			
 			
-			makeBulb();
+			makeBulb(); //bulb
 
-			glBegin(GL_POLYGON);
+			glBegin(GL_POLYGON); //top
 				glVertex3d(0,1,0);
 				glVertex3d(1,1,0);
 				glVertex3d(1,1,1);
@@ -56,7 +56,7 @@ namespace example{
 				
 			glEnd();
 
-			glBegin(GL_POLYGON);
+			glBegin(GL_POLYGON); // bot
 				glVertex3d(0,0,0);
 				glVertex3d(1,0,0);
 				glVertex3d(1,0,1);
@@ -64,31 +64,31 @@ namespace example{
 				
 			glEnd();
 
-			glPushMatrix();
+			glPushMatrix(); // cylinders
 
 				glPushMatrix();
-				glTranslatef(0.1,0.0,0.1);
+				glTranslatef(0.1f,0.0f,0.1f);
 				glScaled(0.1,1.0,0.1);
 				glRotatef(270,1.0f,0.0f,0.0f);
 				gluCylinder	(_cylinderObj, 1, 1, 1, 25, 10);
 				glPopMatrix();
 
 				glPushMatrix();
-					glTranslatef(0.9,0.0,0.1);
+					glTranslatef(0.9f,0.0f,0.1f);
 					glScaled(0.1,1.0,0.1);
 					glRotatef(270,1.0f,0.0f,0.0f);
 					gluCylinder	(_cylinderObj, 1, 1, 1, 25, 10);
 				glPopMatrix();
 				
 				glPushMatrix();
-					glTranslatef(0.9,0.0,0.9);
+					glTranslatef(0.9f,0.0f,0.9f);
 					glScaled(0.1,1.0,0.1);
 					glRotatef(270,1.0f,0.0f,0.0f);
 					gluCylinder	(_cylinderObj, 1, 1, 1, 25, 10);
 				glPopMatrix();
 
 				glPushMatrix();
-					glTranslatef(0.1,0.0,0.9);
+					glTranslatef(0.1f,0.0f,0.9f);
 					glScaled(0.1,1.0,0.1);
 					glRotatef(270,1.0f,0.0f,0.0f);
 					gluCylinder	(_cylinderObj, 1, 1, 1, 25, 10);
@@ -99,7 +99,7 @@ namespace example{
 	}
 	void GrassLamp::makePole(){
 		glPushMatrix();
-			glTranslatef(0.05,0,0.05);
+			glTranslatef(0.05f,0.0f,0.05f);
 			glScalef(0.05f,0.55f,0.05f);
 			glRotatef(270,1.0f,0.0f,0.0f);
 			GLUquadricObj * _cylinderObj = gluNewQuadric();
@@ -110,9 +110,13 @@ namespace example{
 	}
 	
 	void GrassLamp::getModel(){
-		
-		makePole();
-		makeHead();
+
+		glPushMatrix();
+		glScalef(1.0f,0.7f,1.0f);
+			makePole();
+			makeHead();
+
+		glPopMatrix();
 	}
 }
 

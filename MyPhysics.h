@@ -85,6 +85,10 @@ namespace example {
 		void setFront( cg::Vector3d front );
 		void setRight( cg::Vector3d right );
 		void setUp( cg::Vector3d up );
+		
+		cg::Vector3d getFront();
+		cg::Vector3d getRight();
+		cg::Vector3d getUp();
 
 
 	};

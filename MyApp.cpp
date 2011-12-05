@@ -22,7 +22,7 @@ namespace example {
 
 	MyApp::MyApp() {
 		_windowInfo.caption = "Nightmare's Lair";				        
-		_windowInfo.x = 550;
+		_windowInfo.x = 450;
 		_windowInfo.y = 0;
 		_windowInfo.width = 800; 
 		_windowInfo.height = 600; 
@@ -31,44 +31,14 @@ namespace example {
 	}
 	void MyApp::createEntities() {
 
-		addEntity( new MyScene( "Scene" ) );
-		addEntity( new MyFPSCamera( "FPSCamera" ) );
-		addEntity( new MyCamera( "Camera" ) );
-		addEntity( new DebugCamera( "DebugCamera" ) );	
-		addEntity( new MyLight( "Sun" ) );
-		addEntity( new MyController( "Controller" ) );
-		addEntity( new TextureBank( "TextureBank" ) );
-		addEntity( new MyWorld( "World" ) );
-		addEntity( new MainCharacter( "MainCharacter" ) );
-		addEntity( new Heart( "Heart" ) );
-		addEntity( new Key( "Key" ) );
-		addEntity( new Stone( "Stone" ) );
-		addEntity(new Rabbit("rabbit"));
-		addEntity(new Munition("munition"));
-		addEntity(new GroundMunition("groundmunition"));
-		addEntity( new Observer( "Observer" ) );
+		MainMenu *mainMenu = new MainMenu( "Main Menu", this );
+		addEntity( mainMenu );
 		
 	}
 	void MyApp::createViews() {
 	
 		cg::View* v = createView( "view" );
-		v->linkEntityAtEnd( "Scene" );
-		v->linkEntityAtEnd( "FPSCamera" ); 
-		v->linkEntityAtEnd( "Camera" ); 
-		v->linkEntityAtEnd( "DebugCamera" ); 
-		v->linkEntityAtEnd( "Sun" );
-		v->linkEntityAtEnd( "World" ); 
-		v->linkEntityAtEnd( "Heart" );
-		v->linkEntityAtEnd( "Key" );
-		v->linkEntityAtEnd( "Stone" );
-		v->linkEntityAtEnd("rabbit");
-	//	v->linkEntityAtEnd("munition");
-		v->linkEntityAtEnd("groundmunition");
-		v->linkEntityAtEnd( "MainCharacter" );
-		v->linkEntityAtEnd( "Controller" );
-		v->linkEntityAtEnd( "Observer" );	
-		example::World *world = new example::GrassWorld();
-		world->generateWorld("Images\\WorldMap\\Map.bmp",5.0f);
+		v->linkEntityAtEnd( "Main Menu" );
 	}
 
 

@@ -2,11 +2,13 @@
 
 namespace example {
 	 
-	Rabbit::Rabbit(std::string id):
+	Rabbit::Rabbit(int x, int y, float blocksize,std::string id):
 
-		cg::Entity(id),	
+		Enemy(x,y,blocksize,id,0.25,1,0.25),	
 	//	_animationflag (true),
-		_isDebug(false){
+		_isDebug(false)
+		{
+			_physics.setPosition(_pos[0],1.8,_pos[1]);
 	}
 
 	Rabbit::~Rabbit() {
@@ -135,7 +137,7 @@ inline void Rabbit::drawCube(){
 	}
 
 	void Rabbit::init() {
-		_physics.setPosition(2,1.7,0);
+		
 		_physics.setAngularVelocity(1000); 
 		_physics.setLinearVelocity(100); 
 
@@ -152,10 +154,13 @@ inline void Rabbit::drawCube(){
 	}
 
 	void Rabbit::draw() {
+		debugBox(cg::Vector3f(1,0,0));
+
 		glPushMatrix();
 			glCallList(_materialDL);
 			_physics.applyTransforms();
-			
+			float scale = _blocksize*0.25f;
+			glScaled(scale,scale,scale);
 			glCullFace(GL_BACK);
 			
 			glPushMatrix();

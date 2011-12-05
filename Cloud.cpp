@@ -58,11 +58,11 @@ namespace example {
 		 Material * m = MaterialBank::getMaterial(MaterialBank::MATERIAL_PEARL);
 		 m->shade(GL_FRONT_AND_BACK);
 		
-		 glutSolidSphere(1,5,10);
+		 glutSolidSphere(-1,5,10);
 		 glTranslated(1,0,0);
-		 glutSolidSphere(0.5,5,10);
+		 glutSolidSphere(-0.5,5,10);
 		 glTranslated(-2,0,0);
-		 glutSolidSphere(1.5,5,10);
+		 glutSolidSphere(-1.5,5,10);
 		 
 		 
 		 glPopMatrix();
@@ -90,6 +90,9 @@ namespace example {
 			CreateRemanant();
 			_timer = 1.0f;
 		}
+	}
+	void Cloud::setPos(float x, float z){
+		_physics.setPosition(x,_physics.getPosition()[1],z);
 	}
 
 }

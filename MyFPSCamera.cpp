@@ -21,7 +21,7 @@
 namespace example {
 
     MyFPSCamera::MyFPSCamera( std::string id ) : Entity( id ) {
-				glutSetCursor( GLUT_CURSOR_CROSSHAIR );
+				glutSetCursor(GLUT_CURSOR_NONE );
 	}
     MyFPSCamera::~MyFPSCamera() {
 	}
@@ -36,10 +36,6 @@ namespace example {
 		_isFPSMode = true;
 		_isFirst = true;
 		_position.set(0,0,0);
-/*
-		_position.set(3,1.01,-3);//posicao inicial do obj
-
-*/
     }
 
 	/*
@@ -69,11 +65,12 @@ namespace example {
 			GLdouble initialYOrientation = 29.0;
 			
 			// unchanged matrix 
-			glPushMatrix();
-			
+
 			
 			fpsCameraPhysics.cameraRotation( initialXOrientation, 0.0, 1.0, 0.0 );
 			fpsCameraPhysics.cameraRotation( initialYOrientation, 0.0, 0.0, 1.0 );
+			glPushMatrix();
+			
 			fpsCameraPhysics.cameraTranslation( eyeX, eyeY, eyeZ );
 
 			// save unchanged modelView matrix
@@ -81,11 +78,6 @@ namespace example {
 
 			glPopMatrix();
 
-			// move the world such that look the camera is looking to the mouse position
-			
-			fpsCameraPhysics.cameraRotation( initialXOrientation, 0.0, 1.0, 0.0 );
-			fpsCameraPhysics.cameraRotation( initialYOrientation, 0.0, 0.0, 1.0 );
-			
 			// pensava que o produto de rotações fosse comutativo, mas por alguma razão se mudar a ordem destes dois metodos
 			// o movimento da camera fica todo errado
 
@@ -113,7 +105,7 @@ namespace example {
 		if ( _isFPSMode ) {
 
 			
-			glutSetCursor( GLUT_CURSOR_CROSSHAIR );
+			glutSetCursor( GLUT_CURSOR_NONE  );
 
 		}
 		else {
